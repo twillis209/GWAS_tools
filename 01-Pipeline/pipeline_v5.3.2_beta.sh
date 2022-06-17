@@ -163,14 +163,15 @@ Version(){
 }
 
 # Get the options
-while getopts ":f:Vh" option; do
+while getopts ":f:b:Vh" option; do
    case $option in
       h) # display Help
          Help
          exit;;
-      f) # Specifies .tsv.gz file, if desired
-	 array=${OPTARG}
-	 ;;
+      f) FILENAME=$OPTARG
+         ;;
+      b) FILEBASENAME=$OPTARG
+         ;;
       V) # display version
 	 Version
 	 exit;;
@@ -183,32 +184,20 @@ done
 
 echo "GWAS summary statistics processing pipeline. Version $version."
 
-# Check if argument was provided, and choose all (classic option) otherwise.
-if [ -z "$array" ]; then
-	echo "Running pipeline for all .tsv.gz files in the directory"
-	array=(*.tsv.gz) # Initial file list, make sure to have all in tsv.gz format, since chain files are .gz, so including only .gz will try to process those, too :/
-	else
-	echo "Running pipeline for $array."
-fi
-
 #############################################
 ## GLOBAL VARIABLES (Generated once per run)
 #############################################
 
+# TODO fix me
 scriptpath=(~/rds/rds-cew54-basis/GWAS_tools/01-Pipeline/)
-
-
 
 #######################
 ## MAIN LOOP
 #######################
 
+# TODO set f variable as filename
 
-
-for f in "${array[@]}";
-do
-
- FILEBASENAME=$(echo "$f" | sed -e 's/.tsv.gz//' -e 's/-.*//'); # Take as file base name the first dash or file extension.
+# FILEBASENAME=$(echo "$FILENAME" | sed -e 's/.tsv.gz//' -e 's/-.*//'); # Take as file base name the first dash or file extension.
 
 ## Create a temporary directory, copy the target file to it, cd to it, and then run the
 # rest of the processing in it
@@ -219,7 +208,8 @@ TEMPLATE=${TEMPLATE_PREFIX}.${TEMPLATE_RANDOM}
 
 # create the tempdir using your custom $TEMPLATE, which may include
 # a path such as a parent dir, and assign the new path to a var
-TMPDIR=$(mktemp -d $TEMPLATE)
+TMPDIR="$FILEBASENAME"
+mkdir "$TMPDIR"
 
 # Bail out if the temp directory wasn't created successfully.
 if [ ! -e $TMPDIR ]; then
@@ -231,7 +221,7 @@ fi
 #trap "exit 1"           HUP INT PIPE QUIT TERM
 #trap 'rm -rf ../"$TMPDIR"' EXIT
 
-cp "$f" "$TMPDIR"
+cp "$FILENAME" "$TMPDIR"
 cd "$TMPDIR"
 
 ## IMD Basis SNP ids and coordinates for the 3 available builds, for build detection
@@ -247,23 +237,23 @@ awk 'BEGIN{FS="\t";OFS=":"} NR>1 {print $6,$7}' "$scriptpath"Manifest_build_tran
  echo Working on "$FILEBASENAME" file
  echo Checking and changing column separator
  
- n_spaces=$(zcat "$f" | head -n2 | tail -n1 | tr -d -c ' ' | wc -m)
- n_tabs=$(zcat "$f" | head -n2 | tail -n1 | tr -d -c '\t' | wc -m)
- n_commas=$(zcat "$f" | head -n2 | tail -n1 | tr -d -c ',' | wc -m)
- n_semicolons=$(zcat "$f" | head -n2 | tail -n1 | tr -d -c ';' | wc -m)
+ n_spaces=$(zcat "$FILENAME" | head -n2 | tail -n1 | tr -d -c ' ' | wc -m)
+ n_tabs=$(zcat "$FILENAME" | head -n2 | tail -n1 | tr -d -c '\t' | wc -m)
+ n_commas=$(zcat "$FILENAME" | head -n2 | tail -n1 | tr -d -c ',' | wc -m)
+ n_semicolons=$(zcat "$FILENAME" | head -n2 | tail -n1 | tr -d -c ';' | wc -m)
  
  if [[ $n_tabs -gt $n_spaces ]] && [[ $n_tabs -gt $n_commas ]] && [[ $n_tabs -gt $n_semicolons ]]; then
  	echo "Separator seems to be tabs. No substitution required. Removing only spaces from header (if any)."
- 	zcat "$f" | sed '1s/ /_/g' > tmp_fs_file.tsv
+ 	zcat "$FILENAME" | sed '1s/ /_/g' > tmp_fs_file.tsv
  elif [[ $n_spaces -gt $n_commas ]] && [[ $n_spaces -gt $n_semicolons ]]; then
  	echo Separator seems to be spaces. Replacing...
- 	zcat "$f" | sed -e 's/^ *//' -e 's/ *$//' -e 's/ \{1,\}/\t/g' > tmp_fs_file.tsv
+ 	zcat "$FILENAME" | sed -e 's/^ *//' -e 's/ *$//' -e 's/ \{1,\}/\t/g' > tmp_fs_file.tsv
  elif [[ $n_commas -gt $n_semicolons ]]; then
  	echo Separator seems to be commas. Replacing...	
- 	zcat "$f" | sed -e 's/^,*//' -e 's/,*$//' -e 's/,/\t/g' -e '1s/ /_/g' > tmp_fs_file.tsv
+ 	zcat "$FILENAME" | sed -e 's/^,*//' -e 's/,*$//' -e 's/,/\t/g' -e '1s/ /_/g' > tmp_fs_file.tsv
  else 
  	echo Separator seems to be semicolons. Replacing...
- 	zcat "$f" | sed -e 's/^;*//' -e 's/;*$//' -e 's/;/\t/g' -e '1s/ /_/g' > tmp_fs_file.tsv
+ 	zcat "$FILENAME" | sed -e 's/^;*//' -e 's/;*$//' -e 's/;/\t/g' -e '1s/ /_/g' > tmp_fs_file.tsv
  fi
 
 ####################
@@ -351,48 +341,41 @@ awk 'BEGIN{FS="\t";OFS=":"} NR>1 {print $6,$7}' "$scriptpath"Manifest_build_tran
  maxNA=0.5
 
 if [[ "$minCHR" == 0 || "$minBP" == 0 ]]; then
- 	echo "$f" seem to lack CHR/BP coordinates. These are essential. Please check your file.
- 	echo Continuing with next file...
- 	continue
+ 	echo "$FILENAME seem to lack CHR/BP coordinates. These are essential. Please check your file."
+ 	exit 1
  
 elif [[ "$minREF" == 0 || "$minALT" == 0 ]]; then
- 	echo "$f" seem to lack REF/ALT labels. These are essential. Please check your file.
- 	echo Continuing with next file...
- 	continue
+ 	echo "$FILENAME seem to lack REF/ALT labels. These are essential. Please check your file."
+ 	exit 1
 	
  if [[ "$minP" == 0 ]]; then
  	if [[ "$minZ" == 1 ]]; then
-		echo "$f" seems to lack P column, and although it has Z, the functionality for calculating P from Z scores has not been implemented yet, sorry!
-		echo Continuing with next file...
-		continue
+		echo "$FILENAME seems to lack P column, and although it has Z, the functionality for calculating P from Z scores has not been implemented yet, sorry!"
+		exit 1
 	else 
- 		echo "$f" seems to lack P column. This column is essential. Please check your file.
- 		echo Continuing with next file...
-	 	continue
+ 		echo "$FILENAME seems to lack P column. This column is essential. Please check your file."
+	 	exit 1
 	fi
   fi
  else # This works for "P" labels only. I'll extend this for more forms of P in the future
   	PCOL=$(awk -F'\t' '{for(i=1;i<=NF;i++) {if($i == "P") printf(i)	} exit 0}' tmp_reheaded_file.tsv)
 	NAP=$(echo "scale=2;$(awk -v pcol="$PCOL" 'BEGIN{FS=OFS="\t"}NR>1{print $pcol}' tmp_reheaded_file.tsv | grep -cP 'NA|^$') / ($(cat tmp_reheaded_file.tsv | wc -l)-1)" | bc)
 	if [[ 1 -eq $(echo  "$NAP > $maxNA" | bc -l) ]]; then
-		echo P column seems to have more NAs than what is acceptable. Please check your file.
-		echo Continuing with next file...
-		continue
+		echo "P column seems to have more NAs than what is acceptable. Please check your file."
+		exit 1
 	fi
  fi
 
  if [[ "$minOR" == 0 && "$minBETA" == 0 ]]; then 
- 	echo "$f" seem to lack OR AND BETA. At least one of them is essential. Please check your file.
- 	echo Continuing with next file...
- 	continue
+ 	echo "$FILENAME seem to lack OR AND BETA. At least one of them is essential. Please check your file."
+ 	exit 1
 	fi
  if [[ "$minBETA" == 1 ]]; then
  	BETACOL=$(awk -F'\t' ' { for(i=1;i<=NF;i++) { if($i == "BETA") printf(i) } exit 0 }' tmp_reheaded_file.tsv)
 	NABETA=$(echo "scale=2;$(awk -v betacol="$BETACOL" 'BEGIN{FS=OFS="\t"}NR>1{print $betacol}' tmp_reheaded_file.tsv | grep -cP 'NA|^$') / ($(cat tmp_reheaded_file.tsv | wc -l)-1)" | bc)
 	if [[ 1 -eq $(echo  "$NABETA > $maxNA" | bc -l) ]]; then
-		echo BETA column seems to have more NAs than what is acceptable. Please check your file.
-		echo Continuing with next file...
-		continue
+		echo "BETA column seems to have more NAs than what is acceptable. Please check your file."
+		exit 1
 	fi	
 fi
 
@@ -412,11 +395,10 @@ if [[  "$minOR" == 1 && "$minBETA" == 0 ]]; then
  	ORCOL=$(awk -F'\t' ' { for(i=1;i<=NF;i++) {if($i == "OR") printf(i)} exit 0}' tmp_schecked.tsv)
 	NAOR=$(echo "scale=2;$(awk -v orcol="$ORCOL" 'BEGIN{FS=OFS="\t"}NR>1{print $orcol}' tmp_schecked.tsv | grep -cP 'NA|^$') / ($(cat tmp_schecked.tsv | wc -l)-1)" | bc)
 	if  [ 1 -eq $(echo  "$NAOR > $maxNA" | bc -l) ]; then
-		echo OR column seems to have more NAs than what is acceptable. Please check your file.
-		echo Continuing with next file...
-		continue	
+		echo "OR column seems to have more NAs than what is acceptable. Please check your file."
+		exit 1
 	else 	
-		echo "$f" lacks BETA but has OR. BETA will be calculated 
+		echo "$FILENAME" lacks BETA but has OR. BETA will be calculated 
  		awk -v orcol="$ORCOL" 'BEGIN{FS=OFS="\t"} {print $0,log($orcol)}' tmp_schecked.tsv | sed -e 's///' -e '1s/-inf/BETA/' > tmp.tsv && mv tmp.tsv tmp_schecked.tsv
 	fi
 fi
@@ -425,15 +407,13 @@ fi
 # If BETA column exist but has too many NAs, and OR exist, we can recalculate it
 if [[ "$minBETA" == 1 && 1 -eq $(echo  "$NABETA > $maxNA" | bc -l) ]]; then
 	if [[ "$minOR" == 0 ]]; then
-		echo BETA column seems to have more NAs than what is acceptable, and there is no OR column to recalculate it from. Please check your file.
-		echo Continuing with next file...
-		continue
+		echo "BETA column seems to have more NAs than what is acceptable, and there is no OR column to recalculate it from. Please check your file."
+		exit 1
 	elif [[ "$minOR" == 1 ]]; then
 		NAOR=$(echo "scale=2;$(awk -v orcol="$ORCOL" 'BEGIN{FS=OFS="\t"}NR>1{print $orcol}' tmp_schecked.tsv | grep -cP 'NA|^$') / ($(cat tmp_schecked.tsv | wc -l)-1)" | bc)
 		if [[ 1 -eq $(echo  "$NAOR > $maxNA" | bc -l) ]]; then
-			echo BETA and OR both have more NAs that is acceptable. Please check your file.
-			echo Continuing with next file...
-			continue
+			echo "BETA and OR both have more NAs that is acceptable. Please check your file."
+			exit 1
 		else
 			echo BETA column has more NA than acceptable, but file has OR. BETA will be calculated.
 			cut -f"$BETACOL" --complement tmp_schecked.tsv | awk -v orcol="$ORCOL" 'BEGIN{FS=OFS="\t"} {print $0,log($orcol)}' | sed -e 's///' -e '1s/-inf/BETA/' > tmp.tsv && mv tmp.tsv tmp_schecked.tsv
@@ -444,7 +424,7 @@ fi
 
 # We can calculate SE if we have BETA and Z or P values
 if [[ "$minSE" == 0 ]]; then
-	echo "$f" seems to lack SE. It will be calculated using BETA and P values. This will calculate Z scores as a side effect too.
+	echo "$FILENAME" seems to lack SE. It will be calculated using BETA and P values. This will calculate Z scores as a side effect too.
 	Rscript "$scriptpath"SE_Calc_pipeline.R
 	mv tmp.tsv tmp_schecked.tsv
 fi
@@ -466,7 +446,7 @@ awk -v chrcol="$CHRCOL" -v bpcol="$BPCOL" 'BEGIN{FS=OFS="\t"}{sub(/23/,"X",$chrc
 
 
 if [[ "$minSNPID" == 0 ]]; then
- 	echo "$f" seem to lack SNPIDs. This is not ideal, but I will create one using CHR and BP
+ 	echo "$FILENAME" seem to lack SNPIDs. This is not ideal, but I will create one using CHR and BP
  	awk -v chrcol="$CHRCOL" -v bpcol="$BPCOL" -v refcol="$REFCOL" -v altcol="$ALTCOL" 'BEGIN{FS=OFS="\t"} {print $0,$chrcol"_"$bpcol"_"$refcol"_"$altcol}' tmp_schecked.tsv | sed -e 's///' -e '1s/CHR_BP_REF_ALT/SNPID/' > tmp.tsv && mv tmp.tsv tmp_schecked.tsv
 
 fi
@@ -484,8 +464,8 @@ if [[ "$NASNPID" != 0 ]]; then
 	fi
 fi
 
-echo Column sanity check OK. 
-	
+echo "Column sanity check OK."
+
 
 ###################
 ## LIFTOVER STAGE
@@ -505,7 +485,7 @@ echo Column sanity check OK.
  		CHOSEN_BUILD=5
  	else 	CHOSEN_BUILD=3
  	fi
- 	echo "$f had $matches18 matches with hg18, $matches19 with hg19, and $matches38 with hg38 for manifest SNPs."
+ 	echo "$FILENAME had $matches18 matches with hg18, $matches19 with hg19, and $matches38 with hg38 for manifest SNPs."
  	rm tmp_file_chrbp.tsv
 # else 
 # 	cat tmp_betachecked_file.tsv | grep -wf rs_manifest.txt | awk -v bpcol="$BPCOL" -v snpidcol="$SNPIDCOL" 'BEGIN{FS="\t";OFS="\t"} {print $snpidcol, $bpcol}' > tmp_rsmatchedfile.txt
@@ -525,7 +505,7 @@ echo Column sanity check OK.
 
 # Note: 3 = hg18, 5 = hg19, and 7 = hg38
  if [ $CHOSEN_BUILD -eq 3 ]; then
- 	echo "$f" seems to be in hg18.
+ 	echo "$FILENAME" seems to be in hg18.
 	# Prepare input for liftover
 	# Extract relevant columns for target file, and create a BED file containing them. This will be the file fed to the liftover script 
 	 echo Preparing input for liftover...
@@ -544,7 +524,7 @@ echo Column sanity check OK.
  	"$scriptpath"liftOver "${FILEBASENAME}".bed "$scriptpath"hg18ToHg38.over.chain.gz "${FILEBASENAME}"-lo-output.bed "${FILEBASENAME}"-unlifted.bed
 
 elif [ $CHOSEN_BUILD -eq 5 ]; then
- 	echo "$f" seems to be in hg19.
+ 	echo "$FILENAME" seems to be in hg19.
 	# Prepare input for liftover
 	# Extract relevant columns for target file, and create a BED file containing them. This will be the file fed to the liftover script 
 	 echo Preparing input for liftover...
@@ -563,29 +543,33 @@ elif [ $CHOSEN_BUILD -eq 5 ]; then
  	"$scriptpath"liftOver "${FILEBASENAME}".bed "$scriptpath"hg19ToHg38.over.chain.gz "${FILEBASENAME}"-lo-output.bed "${FILEBASENAME}"-unlifted.bed
 
 elif [ $CHOSEN_BUILD -eq 7 ]; then
- 	echo "$f" is in hg38 already, skipping liftover step...
+ 	echo "$FILENAME" is in hg38 already, skipping liftover step...
  	sed -e '1s/\<CHR\>/CHR38/' -e '1s/\<BP\>/BP38/' tmp_schecked.tsv | gzip  > ../"${FILEBASENAME}"-hg38.tsv.gz
  	cd .. && rm -rf "$TMPDIR"
- 	continue # Remove/rethink this break when the whole pipeline is a single loop and there are more steps afterwards.
+  exit 0
+  # NB: this continue used to break out of the loop, so we exit here instead
+# 	continue # Remove/rethink this break when the whole pipeline is a single loop and there are more steps afterwards.
  else
- 	echo Sorry, something wrong happened at the build selection stage and I could not identify the build for "$f".
- 	echo "$f" could not be overlifted
- 	continue 
+ 	echo "Sorry, something wrong happened at the build selection stage and I could not identify the build for $FILENAME."
+ 	echo "$FILENAME could not be overlifted."
+# 	continue
+  exit 1
  fi
- 
- 
+
+ # NB: If CHOSEN_BUILD -eq 7, we never run the following code
+
  awk 'BEGIN{FS=OFS="\t"}{sub("chr", "",$1); print $4,$1,$2}' "${FILEBASENAME}"-lo-output.bed | sed '1i SNPID\tCHR38\tBP38' > "${FILEBASENAME}"-lo-output2.bed
  # New joining command from 5.0 on
  awk -v OFS='\t' 'NR==FNR{a1[$1]=$2; a2[$1]=$3;next};{ if ($1 in a1) print $0, a1[$1], a2[$1]; else print $0, "NA","NA"}' "${FILEBASENAME}"-lo-output2.bed tmp_formerging1.tsv | gzip  > ../"${FILEBASENAME}"-hg38.tsv.gz
+
 #  snpsbeforeliftover=$(echo ""$(cat tmp_formerging1.tsv | wc -l)" - 1" | bc)
 #  snpsafterliftover=$(echo ""$(zcat "${FILEBASENAME}"-hg38.tsv.gz | wc -l)" -1" | bc)
 #  snpsdifference=$(echo "$snpsbeforeliftover" - "$snpsafterliftover" | bc)
-#  echo ""$f" had "$snpsbeforeliftover" SNPs. After liftover it now has "$snpsafterliftover" ("$snpsdifference" less)."
- echo "$f" suscessfully lifted over to hg38 build!
+#  echo ""$FILENAME" had "$snpsbeforeliftover" SNPs. After liftover it now has "$snpsafterliftover" ("$snpsdifference" less)."
+ echo "$FILENAME successfully lifted over to hg38 build!"
  
 # rm  tmp_formerging1.tsv tempcolcheck.txt tmp_schecked.tsv *.bed rs_manifest.txt hg18_manifest.txt hg19_manifest.txt hg38_manifest.txt
 
- cd .. && rm -rf "$TMPDIR"
-
-done
+ cd .. && rm -rf $TMPDIR
+ #cd .. && rm -rf "$TMPDIR"
 
