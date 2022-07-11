@@ -270,10 +270,10 @@ awk 'BEGIN{FS="\t";OFS=":"} NR>1 {print $6,$7}' "$scriptpath"Manifest_build_tran
  	gsub(/\<íd\>|\<id\>|\<ID\>|\<variant_id\>|\<MarkerName\>|\<SNP\>|\<rsid\>|\<rsids\>|\<SNP_Name\>|\<snp\>|\<snpid\>|\<SNP_ID\>|\<rsID\>|#SNPID\>|\<rs_number\>|\<RSID\>|\<rs\>|\<db_SNP_RS_ID\/Marker\>|\<dbSNP_RS_ID\>|\<Variant\>/,"SNPID");
  	gsub(/\<OtherAllele\>|\<reference_allele\>|\<Ref_Allele\>|\<OTHER_ALLELE\>|\<other_allele\>|\<A2_other\>|\<NEA\>|\<Ref_Allele\>|\<Ref\>|\<ref\>|\<Allele1\>/,"REF");
  	gsub(/\<effect_allele\>|\<Effect_Allele\>|\<EffectAllele\>|\<A1_effect\>|\<RISK_ALLELE\>|\<EA\>|\<Risk_Allele\>|\<EFFECT_ALLELE\>|\<Alt\>|\<alt\>|\<Allele2\>/,"ALT");
- 	gsub(/\<Beta\>|\<beta\>|\<Effect\>|\<effect\>|\<EFFECT\>|\<beta_SNP_add\>|\<EFFECT_ALT\>|\<effB\>|\<all_inv_var_meta_beta\>/,"BETA");
- 	gsub(/\<standard_error\>|\<StdErr\>|\<stderr\>|\<sebeta_SNP_add\>|\<se\>|\<STDERR\>|\<sebeta\>|\<se_effB\>|\<all_inv_var_meta_sebeta\>|\<LOG\(OR\)_SE\>/,"SE");
+ 	gsub(/\<Beta\>|\<beta\>|\<Effect\>|\<effect\>|\<EFFECT\>|\<beta_SNP_add\>|\<EFFECT_ALT\>|\<effB\>|\<beta_EUR\>|\<all_inv_var_meta_beta\>/,"BETA");
+ 	gsub(/\<standard_error\>|\<StdErr\>|\<stderr\>|\<sebeta_SNP_add\>|\<se\>|\<STDERR\>|\<sebeta\>|\<se_effB\>|\<se_EUR\>|\<all_inv_var_meta_sebeta\>|\<LOG\(OR\)_SE\>/,"SE");
  	gsub(/\<odds_ratio\>|\<Odds_ratio\>|\<or\>|\<OddsRatio\>|\<OR\(A1\)\>|\<ORX\>/,"OR");
- 	gsub(/\<p_value\>|\<P.value\>|\<pvalue\>|\<P-value\>|\<pval\>|\<p.value\>|\<Pval\>|\<PVALUE\>|\<Pvalue\>|\<P_VALUE\>|\<P-val\>|\<p\>|\<All.p.value\>|\<P_value\>|\<p-value\>|\<GC-adjusted_P_\>|\<Chi-Squared__P\>|\<P1df\>|\<all_inv_var_meta_p\>/,"P");
+ 	gsub(/\<p_value\>|\<P.value\>|\<pvalue\>|\<P-value\>|\<pval\>|\<p.value\>|\<Pval\>|\<PVALUE\>|\<Pvalue\>|\<P_VALUE\>|\<P-val\>|\<p\>|\<All.p.value\>|\<P_value\>|\<p-value\>|\<GC-adjusted_P_\>|\<Chi-Squared__P\>|\<P1df\>|\<pval_EUR\>|\<all_inv_var_meta_p\>/,"P");
  	gsub(/\<Log10p\>/,"LOG10P");
  	gsub(/\<_-log10_p-value\>/,"-LOG10P");
  	gsub(/\<effect_allele_frequency\>|<\maf\>|<\MAF\>/,"ALT_FREQ");
