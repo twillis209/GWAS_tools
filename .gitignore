@@ -1,2 +1,6 @@
 liftOver
 04-Reduction/err/*
+.snakemake
+resources
+tmp.*
+results

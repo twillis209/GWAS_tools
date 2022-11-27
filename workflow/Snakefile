@@ -1,0 +1,9 @@
+rule check_file_separator:
+    input:
+        "resources/gwas/{trait}.{suffix}"
+    output:
+        "results/{trait}_checked_separator.{suffix}"
+    threads: 8
+    params:
+        output_separator = '\t'
+    script: "scripts/check_file_separator.R"
