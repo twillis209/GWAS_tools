@@ -1,6 +1,6 @@
 import unittest
 import subprocess as sp
-from utils import run_snakemake
+from test.utils import run_snakemake
 
 class Test_check_file_separator(unittest.TestCase):
     ''' '''
