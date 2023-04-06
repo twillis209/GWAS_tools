@@ -184,13 +184,6 @@ done
 
 echo "GWAS summary statistics processing pipeline. Version $version."
 
-#############################################
-## GLOBAL VARIABLES (Generated once per run)
-#############################################
-
-# TODO fix me
-scriptpath=(~/rds/rds-cew54-basis/GWAS_tools/01-Pipeline/)
-
 #######################
 ## MAIN LOOP
 #######################
@@ -209,6 +202,12 @@ TEMPLATE=${TEMPLATE_PREFIX}.${TEMPLATE_RANDOM}
 # create the tempdir using your custom $TEMPLATE, which may include
 # a path such as a parent dir, and assign the new path to a var
 TMPDIR="$FILEBASENAME"
+
+if [ $TMPDIR ]; then
+    echo "$TMPDIR" directory already exists, removing...
+    rm -rf $TMPDIR;
+fi
+
 mkdir "$TMPDIR"
 
 # Bail out if the temp directory wasn't created successfully.
@@ -222,14 +221,17 @@ fi
 #trap 'rm -rf ../"$TMPDIR"' EXIT
 
 cp "$FILENAME" "$TMPDIR"
+
 cd "$TMPDIR"
+
+GWAS_TOOLS_DIR="$(pwd)/.."
 
 ## IMD Basis SNP ids and coordinates for the 3 available builds, for build detection
 
-awk 'BEGIN{FS=OFS="\t"} NR>1 {print $1}' "$scriptpath"Manifest_build_translator.tsv > rs_manifest.txt
-awk 'BEGIN{FS="\t";OFS=":"} NR>1 {print $2,$3}' "$scriptpath"Manifest_build_translator.tsv > hg18_manifest.txt
-awk 'BEGIN{FS="\t";OFS=":"} NR>1 {print $4,$5}' "$scriptpath"Manifest_build_translator.tsv > hg19_manifest.txt
-awk 'BEGIN{FS="\t";OFS=":"} NR>1 {print $6,$7}' "$scriptpath"Manifest_build_translator.tsv > hg38_manifest.txt
+awk 'BEGIN{FS=OFS="\t"} NR>1 {print $1}' "$GWAS_TOOLS_DIR/Manifest_build_translator.tsv" > rs_manifest.txt
+awk 'BEGIN{FS="\t";OFS=":"} NR>1 {print $2,$3}' "$GWAS_TOOLS_DIR/Manifest_build_translator.tsv" > hg18_manifest.txt
+awk 'BEGIN{FS="\t";OFS=":"} NR>1 {print $4,$5}' "$GWAS_TOOLS_DIR/Manifest_build_translator.tsv" > hg19_manifest.txt
+awk 'BEGIN{FS="\t";OFS=":"} NR>1 {print $6,$7}' "$GWAS_TOOLS_DIR/Manifest_build_translator.tsv" > hg38_manifest.txt
 
 #########################
 ## FILE SEPARATOR STAGE
@@ -425,7 +427,7 @@ fi
 # We can calculate SE if we have BETA and Z or P values
 if [[ "$minSE" == 0 ]]; then
 	echo "$FILENAME" seems to lack SE. It will be calculated using BETA and P values. This will calculate Z scores as a side effect too.
-	Rscript "$scriptpath"SE_Calc_pipeline.R
+	Rscript "$GWAS_TOOLS_DIR/SE_Calc_pipeline.R"
 	mv tmp.tsv tmp_schecked.tsv
 fi
 
@@ -470,7 +472,6 @@ echo "Column sanity check OK."
 ###################
 ## LIFTOVER STAGE
 ###################
-
 
 # Check build
 # echo Checking build...I will try to use SNPIDs to check for build. 
@@ -521,7 +522,7 @@ echo "Column sanity check OK."
 	 fi
 	sed -e '1s/\<CHR\>/CHR18/' -e '1s/\<BP\>/BP18/' tmp_formerging1.tsv > tmp.tsv && mv tmp.tsv tmp_formerging1.tsv
  	echo Liftovering...
- 	"$scriptpath"liftOver "${FILEBASENAME}".bed "$scriptpath"hg18ToHg38.over.chain.gz "${FILEBASENAME}"-lo-output.bed "${FILEBASENAME}"-unlifted.bed
+ 	liftOver "${FILEBASENAME}".bed "$GWAS_TOOLS_DIR/hg18ToHg38.over.chain.gz" "${FILEBASENAME}"-lo-output.bed "${FILEBASENAME}"-unlifted.bed
 
 elif [ $CHOSEN_BUILD -eq 5 ]; then
  	echo "$FILENAME" seems to be in hg19.
@@ -540,7 +541,7 @@ elif [ $CHOSEN_BUILD -eq 5 ]; then
 	 fi
 	sed -e '1s/\<CHR\>/CHR19/' -e '1s/\<BP\>/BP19/' tmp_formerging1.tsv > tmp.tsv && mv tmp.tsv tmp_formerging1.tsv
  	echo Liftovering...
- 	"$scriptpath"liftOver "${FILEBASENAME}".bed "$scriptpath"hg19ToHg38.over.chain.gz "${FILEBASENAME}"-lo-output.bed "${FILEBASENAME}"-unlifted.bed
+ 	liftOver "${FILEBASENAME}".bed "$GWAS_TOOLS_DIR/hg19ToHg38.over.chain.gz" "${FILEBASENAME}"-lo-output.bed "${FILEBASENAME}"-unlifted.bed
 
 elif [ $CHOSEN_BUILD -eq 7 ]; then
  	echo "$FILENAME" is in hg38 already, skipping liftover step...
