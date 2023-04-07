@@ -1,15 +1,15 @@
 include: "wildcard_constraints.smk"
 
-rule check_file_separator:
-    input:
-        "resources/gwas/{input_name}.tsv.gz"
-    output:
-        temp("results/check_file_sep/{input_name}.tsv.gz")
-    script: "scripts/check_file_separator.R"
+#rule check_file_separator:
+#    input:
+#        "resources/gwas/{input_name}.tsv.gz"
+#    output:
+#        temp("results/check_file_sep/{input_name}.tsv.gz")
+#    script: "check_file_separator.R"
 
 rule rehead:
     input:
-        "results/check_file_sep/{input_name}.tsv.gz"
+        "resources/gwas/{input_name}.tsv.gz"
     output:
         temp("results/check_file_sep/reheaded/{input_name}.tsv.gz")
     script: "scripts/rehead.R"
@@ -68,7 +68,7 @@ rule liftover:
         lifted = temp("results/check_file_sep/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}-lo-output.bed"),
         unlifted = temp("results/check_file_sep/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}-unlifted.bed")
     run:
-        with open(snakemake.input.build, 'r') as fh:
+        with open(input.build, 'r') as fh:
             assembly = fh.readline().strip()
 
         if assembly == 'hg19':
@@ -82,8 +82,7 @@ rule merge_liftovered_rows_with_summary_statistics:
         sumstats = "results/check_file_sep/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}_prepared.tsv"
     output:
         "results/check_file_sep/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}-hg38.tsv.gz"
-    script: "workflow/scripts/merge_liftovered_rows_with_sumstats.R"
-
+    script: "scripts/merge_liftovered_rows_with_sumstats.R"
 
 rule test:
     input:

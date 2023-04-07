@@ -15,10 +15,11 @@ cluster: "mkdir -p logs/{name} &&
 # NB: We need the --parsable option to allow the cluster-status script cluster-cancel command to work 
 jobs: 300
 local-cores: 2
-cores: 16
+cores: 8
 default-resources:
-  - runtime=5
-  - mem_mb=3420
+  - threads=8
+  - runtime=10
+  - mem_mb=27360
 keep-going: True
 use-conda: False
 scheduler: greedy

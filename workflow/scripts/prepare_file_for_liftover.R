@@ -1,8 +1,12 @@
 library(data.table)
 setDTthreads(snakemake@threads)
 
+library(stringr)
+
 dat <- fread(snakemake@input[['sumstats']], header = T, sep = '\t')
 build <- fread(snakemake@input[['build']], header = T, sep = '\t')
+
+dat[, BP := format(BP, scientific = F)]
 
 colnames <- names(dat)
 
