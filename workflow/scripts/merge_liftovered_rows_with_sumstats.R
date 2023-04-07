@@ -4,7 +4,7 @@ setDTthreads(snakemake@threads)
 dat <- fread(snakemake@input[['sumstats']], header = T, sep = '\t')
 bedfile <- fread(snakemake@input[['lifted']], header = F, sep = '\t')
 
-names(bedfile) <- c('CHR38', 'BP38', 'BP38+1', 'SNPID')
+names(bedfile) <- c('CHR38', 'BP38', 'BP2', 'SNPID')
 
 bedfile <- bedfile[, .(SNPID, CHR38, BP38)]
 
