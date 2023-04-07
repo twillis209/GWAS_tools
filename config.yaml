@@ -1,0 +1,35 @@
+cluster: "mkdir -p logs/{name} &&
+  sbatch
+  -J {name}
+  -o logs/{name}/%j.out
+  -e logs/{name}/%j.err
+  --export ALL,OMP_NUM_THREADS={threads}
+  --account MRC-BSU-SL2-CPU 
+  --time {resources.runtime}
+  --nodes 1
+  --ntasks 1
+  --cpus-per-task {threads}
+  --mail-type FAIL
+  --partition cclake,cclake-himem,skylake-himem,skylake,icelake,icelake-himem
+  --parsable"
+# NB: We need the --parsable option to allow the cluster-status script cluster-cancel command to work 
+jobs: 300
+local-cores: 2
+cores: 16
+default-resources:
+  - runtime=5
+  - mem_mb=3420
+keep-going: True
+use-conda: False
+scheduler: greedy
+rerun-incomplete: True
+dry-run: False
+verbose: False
+nolock: True
+notemp: True
+rerun-triggers: 'mtime'
+max-status-checks-per-second: 1
+latency-wait: 20
+cluster-status: './cluster_status.py' 
+cluster-cancel: 'scancel'
+retries: 0
