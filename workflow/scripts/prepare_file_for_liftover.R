@@ -14,7 +14,7 @@ setcolorder(dat, c('SNPID', colnames[colnames != 'SNPID']))
 
 assembly <- names(which.max(build[1]))
 
-setnames(dat, c('CHR', 'BP'), c(paste0('CHR', str_remove(assembly, 'hg')), paste0('BP', str_remove(assembly, 'hg38'))))
+setnames(dat, c('CHR', 'BP'), c(paste0('CHR', str_remove(assembly, 'hg')), paste0('BP', str_remove(assembly, 'hg'))))
 
 fwrite(dat, file = snakemake@output[['prepared']], sep = '\t')
 fwrite(data.table(build = assembly), file = snakemake@output[['build']], sep = ' ', col.names = F)

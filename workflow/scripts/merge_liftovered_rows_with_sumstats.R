@@ -7,5 +7,9 @@ bedfile <- fread(snakemake@input[['lifted']], header = F, sep = '\t')
 names(bedfile) <- c('CHR38', 'BP38', 'BP38+1', 'SNPID')
 
 bedfile <- bedfile[, .(SNPID, CHR38, BP38)]
-# TODO not sure how to use the SNPID column in the merge
 
+dat <- merge(dat, bedfile, by = 'SNPID')
+
+dat[, CHR38 := stringr::str_remove(CHR38, 'chr')]
+
+fwrite(dat, file = snakemake@output[[1]], sep = '\t')

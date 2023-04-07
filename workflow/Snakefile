@@ -1,72 +1,65 @@
 include: "wildcard_constraints.smk"
 
-#rule check_file_separator:
-#    input:
-#        "resources/gwas/{input_name}.tsv.gz"
-#    output:
-#        temp("results/check_file_sep/{input_name}.tsv.gz")
-#    script: "check_file_separator.R"
-
 rule rehead:
     input:
         "resources/gwas/{input_name}.tsv.gz"
     output:
-        temp("results/check_file_sep/reheaded/{input_name}.tsv.gz")
+        temp("results/reheaded/{input_name}.tsv.gz")
     script: "scripts/rehead.R"
 
 rule check_for_minimal_column_set:
     input:
-        "results/check_file_sep/reheaded/{input_name}.tsv.gz"
+        "results/reheaded/{input_name}.tsv.gz"
     output:
-        temp("results/check_file_sep/reheaded/min_col_set/{input_name}.tsv.gz")
+        temp("results/reheaded/min_col_set/{input_name}.tsv.gz")
     script: "scripts/check_for_minimal_column_set.R"
 
 rule fix_alleles_and_id:
     input:
-        "results/check_file_sep/reheaded/min_col_set/{input_name}.tsv.gz"
+        "results/reheaded/min_col_set/{input_name}.tsv.gz"
     output:
-        temp("results/check_file_sep/reheaded/min_col_set/fixed_alleles/{input_name}.tsv.gz")
+        temp("results/reheaded/min_col_set/fixed_alleles/{input_name}.tsv.gz")
     script: "scripts/check_for_minimal_column_set.R"
 
 rule recalculate_missing_summary_statistics:
     input:
-        "results/check_file_sep/reheaded/min_col_set/fixed_alleles/{input_name}.tsv.gz"
+        "results/reheaded/min_col_set/fixed_alleles/{input_name}.tsv.gz"
     output:
-        temp("results/check_file_sep/reheaded/min_col_set/fixed_alleles/recalc_sumstats/{input_name}.tsv.gz")
+        temp("results/reheaded/min_col_set/fixed_alleles/recalc_sumstats/{input_name}.tsv.gz")
     script: "scripts/recalculate_missing_sumstats.R"
 
 rule detect_build:
     input:
         manifest = "resources/build_manifest.tsv",
-        sumstats = "results/check_file_sep/reheaded/min_col_set/fixed_alleles/recalc_sumstats/{input_name}.tsv.gz"
+        sumstats = "results/reheaded/min_col_set/fixed_alleles/recalc_sumstats/{input_name}.tsv.gz"
     output:
         temp("results/build_detection/{input_name}.tsv")
     script: "scripts/detect_build.R"
 
 rule create_bed_file_for_liftover:
     input:
-        "results/check_file_sep/reheaded/min_col_set/fixed_alleles/recalc_sumstats/{input_name}.tsv.gz"
+        "results/reheaded/min_col_set/fixed_alleles/recalc_sumstats/{input_name}.tsv.gz"
     output:
-        temp("results/check_file_sep/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}.bed")
+        temp("results/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}.bed")
     script: "scripts/create_bedfile.R"
 
 rule prepare_file_for_liftover:
     input:
-        sumstats = "results/check_file_sep/reheaded/min_col_set/fixed_alleles/recalc_sumstats/{input_name}.tsv.gz",
+        sumstats = "results/reheaded/min_col_set/fixed_alleles/recalc_sumstats/{input_name}.tsv.gz",
         build = "results/build_detection/{input_name}.tsv"
     output:
-        prepared = temp("results/check_file_sep/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}_prepared.tsv"),
-        build = temp("results/check_file_sep/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}_build.txt")
+        prepared = temp("results/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}_prepared.tsv.gz"),
+        build = temp("results/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}_build.txt")
     script: "scripts/prepare_file_for_liftover.R"
 
 rule liftover:
     input:
-        build = "results/check_file_sep/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}_build.txt",
-        bed_file = "results/check_file_sep/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}.bed",
+        build = "results/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}_build.txt",
+        bed_file = "results/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}.bed",
         hg19_chainfile = "resources/hg19ToHg38.over.chain.gz"
     output:
-        lifted = temp("results/check_file_sep/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}-lo-output.bed"),
-        unlifted = temp("results/check_file_sep/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}-unlifted.bed")
+        lifted = temp("results/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}_lifted.bed"),
+        unlifted = temp("results/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}_unlifted.bed")
     run:
         with open(input.build, 'r') as fh:
             assembly = fh.readline().strip()
@@ -78,12 +71,12 @@ rule liftover:
 
 rule merge_liftovered_rows_with_summary_statistics:
     input:
-        lifted = "results/check_file_sep/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}-lo-output.bed",
-        sumstats = "results/check_file_sep/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}_prepared.tsv"
+        lifted = "results/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}_lifted.bed",
+        sumstats = "results/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}_prepared.tsv.gz"
     output:
-        "results/check_file_sep/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}-hg38.tsv.gz"
+        "results/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/{input_name}-hg38.tsv.gz"
     script: "scripts/merge_liftovered_rows_with_sumstats.R"
 
 rule test:
     input:
-        "results/check_file_sep/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/ra-hg38.tsv.gz"
+        "results/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/ra-hg38.tsv.gz"

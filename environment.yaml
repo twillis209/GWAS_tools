@@ -1,0 +1,8 @@
+name: gwas_tools
+channels:
+- conda-forge
+- bioconda
+dependencies:
+- python >= 3.11
+- bioconda/noarch::snakemake >= 7.25.0
+- ipython >= 8.10.0
