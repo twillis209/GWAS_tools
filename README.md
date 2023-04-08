@@ -1,6 +1,6 @@
 # GWAS_tools
 
-This is a fork of [`GWAS_tools`](github.com/GRealesM/GWAS_tools), restructuring what was a bash program into a `snakemake` pipeline depending on a series of R scripts.
+This is a fork of [`GWAS_tools`](github.com/GRealesM/GWAS_tools), restructuring what was a bash program into a `snakemake` pipeline depending on a series of R scripts. 99% of the credit for this belongs to the original author; translating things into `snakemake` and `R` took only a few hours.
 
 ## Dependencies
 
