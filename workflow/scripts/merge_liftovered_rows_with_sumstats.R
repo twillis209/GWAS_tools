@@ -2,21 +2,23 @@ library(data.table)
 setDTthreads(snakemake@threads)
 
 dat <- fread(snakemake@input[['sumstats']], header = T, sep = '\t')
-bedfile <- fread(snakemake@input[['lifted']], header = F, sep = '\t')
-build <- fread(snakemake@input[['build']], header = T, sep = '\t')
 
-assembly <- names(which.max(build[1]))
+if('CHR38' %in% names(dat) & 'BP38' %in% names(dat)) {
+  dat[, CHR38 := stringr::str_remove(CHR38, 'chr')]
 
-names(bedfile) <- c('CHR38', 'BP38', 'BP2', 'SNPID')
+  fwrite(dat, file = snakemake@output[[1]], sep = '\t')
+} else {
+  bedfile <- fread(snakemake@input[['lifted']], header = F, sep = '\t')
 
-bedfile <- bedfile[, .(SNPID, CHR38, BP38)]
+  names(bedfile) <- c('CHR38', 'BP38', 'BP2', 'SNPID')
 
-dat <- merge(dat, bedfile, by = 'SNPID')
+  bedfile <- bedfile[, .(SNPID, CHR38, BP38)]
 
-dat[, CHR38 := stringr::str_remove(CHR38, 'chr')]
+  dat[, CHR19 := stringr::str_remove(CHR19, 'chr')]
 
-if(assembly == 'hg38') {
-  dat[, c('CHR', 'BP') := NULL]
+  dat <- merge(dat, bedfile, by = 'SNPID')
+
+  dat[, CHR38 := stringr::str_remove(CHR38, 'chr')]
+
+  fwrite(dat, file = snakemake@output[[1]], sep = '\t')
 }
-
-fwrite(dat, file = snakemake@output[[1]], sep = '\t')

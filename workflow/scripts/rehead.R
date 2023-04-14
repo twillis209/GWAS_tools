@@ -8,6 +8,10 @@ dat <- fread(snakemake@input[[1]], header = T, sep = '\t')
 
 col_names <- names(dat)
 
+cols_to_drop <- col_names[col_names %in% snakemake@params$columns_to_drop]
+
+dat[, (cols_to_drop) := NULL]
+
 # chromosome column
 str_replace(col_names, "^Chr$|^chromosome$|^Chromosome$|^chr$|^Chr_ID$|^hg18chr$|^CHROMOSOME$|^#chrom$|^#CHROM$|^chrom$|^#CHR$", "CHR") %>%
  	str_replace("^Pos$|^base_pair_location$|^BP$|^BP\\(hg19\\)$|^Position$|^POS$|^pos$|^Chr_Position$|^bp$|^position$|^Position\\(hg19\\)$|^POSITION$|^bp_hg19$|^Coordinate$|^chrloc$", "BP") %>%
@@ -35,8 +39,17 @@ str_replace(col_names, "^Chr$|^chromosome$|^Chromosome$|^chr$|^Chr_ID$|^hg18chr$
  	str_replace("^n$","N") %>%
  	str_replace("^Rsq$","RSQ") %>%
  	str_replace("^MARKER$|^íd$|^Chr:Position$","CHR:BP") %>%
-  str_replace("^Zscore$|^ZSCORE$|^Z_STAT$","Z") -> updated_col_names
+  str_replace("^Zscore$|^ZSCORE$|^Z_STAT$","Z") %>%
+  str_replace(sprintf("^%s$", snakemake@params$pan_ukb_p_column), "P") %>%
+  str_replace(sprintf("^%s$", snakemake@params$pan_ukb_beta_column), "BETA") %>%
+  str_replace(sprintf("^%s$", snakemake@params$pan_ukb_se_column), "SE") -> updated_col_names
 
 names(dat) <- updated_col_names
+
+if(!('P' %in% updated_col_names) & snakemake@params$pan_ukb_neglog10_p_column %in% updated_col_names) {
+  setnames(dat, snakemake@params$pan_ukb_neglog10_p_column, "P")
+
+  dat[, P := 10^(-P)]
+}
 
 fwrite(dat, file = snakemake@output[[1]], sep = '\t')

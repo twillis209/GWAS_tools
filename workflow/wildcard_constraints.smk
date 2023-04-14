@@ -1,2 +1,2 @@
 wildcard_constraints:
-    input_name = "[\w\+-]+"
+    input_name = "[A-Za-z0-9\+-]+"

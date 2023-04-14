@@ -1,6 +1,6 @@
 rule download_test_dataset:
     output:
-        "resources/gwas/ra.tsv.gz"
+        "resources/gwas_pipeline/ra.tsv.gz"
     run:
         shell("wget -O {output} http://plaza.umin.ac.jp/~yokada/datasource/files/GWASMetaResults/RA_GWASmeta_European_v2.txt.gz")
 
@@ -11,4 +11,4 @@ rule download_test_dataset:
 
 rule test_pipeline:
     input:
-        "results/reheaded/min_col_set/fixed_alleles/recalc_sumstats/liftover/ra-hg38.tsv.gz"
+        "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/ra-hg38.tsv.gz"

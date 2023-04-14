@@ -13,5 +13,3 @@ hg19 <- merge(dat[, .(CHR, BP)], manifest[, .(CHR19, BP19)], by.x = c('CHR', 'BP
 hg38 <- merge(dat[, .(CHR, BP)], manifest[, .(CHR38, BP38)], by.x = c('CHR', 'BP'), by.y = c('CHR38', 'BP38'))
 
 fwrite(data.table(hg18 = hg18[, .N], hg19 = hg19[, .N], hg38 = hg38[, .N]), file = snakemake@output[[1]], sep = '\t')
-
-
