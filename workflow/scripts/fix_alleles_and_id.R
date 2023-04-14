@@ -15,6 +15,9 @@ dat[CHR == '23', CHR := 'X']
 if(!(SNPID %in% names(dat))) {
   dat[is.na(REF) | is.na(ALT), SNPID := paste(CHR, BP, sep = '_')]
   dat[!is.na(REF) & !is.na(ALT), SNPID := paste(CHR, BP, REF, ALT, sep = '_')]
+} else {
+  dat[(SNPID == "" | is.na(SNPID)) & (is.na(REF) | is.na(ALT)), SNPID := paste(CHR, BP, sep = '_')]
+  dat[(SNPID == "" | is.na(SNPID)) & !is.na(REF) & !is.na(ALT), SNPID := paste(CHR, BP, REF, ALT, sep = '_')]
 }
 
 fwrite(dat, file = snakemake@output[[1]], sep = '\t')
