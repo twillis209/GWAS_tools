@@ -1,5 +1,3 @@
-configfile: "config/config.yaml"
-
 include: "wildcard_constraints.smk"
 include: "rules/test_rules.smk"
 
