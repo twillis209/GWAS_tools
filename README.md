@@ -10,12 +10,12 @@ The `environment.yaml` file can be used to create a `conda` environment called `
 conda env create --file environment.yaml
 ```
 
-The pipeline also expects the `liftOver` executable to be on the path ([download here](https://genome-store.ucsc.edu/)).
-
-Lastly, the pipeline's R scripts also require the following packages:
+This environment should also provide `R` and the following packages:
 - `data.table`
 - `stringr`
 - `magrittr`
+
+The pipeline also expects the `liftOver` executable to be on the path ([download here](https://genome-store.ucsc.edu/)).
 
 ## Testing the pipeline
 
