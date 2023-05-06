@@ -1,5 +1,3 @@
-configfile: "config/config.yaml"
-
 include: "wildcard_constraints.smk"
 include: "rules/test_rules.smk"
 
@@ -16,7 +14,6 @@ rule rehead:
         pan_ukb_se_column = 'se_EUR'
     threads: 8
     script: "scripts/rehead.R"
-
 
 rule fix_alleles_and_id:
     input:
