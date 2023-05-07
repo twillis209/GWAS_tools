@@ -1,0 +1,16 @@
+cores: 8
+default-resources:
+  - threads=8
+  - runtime=10
+  - mem_mb=27360
+keep-going: True
+use-conda: False
+scheduler: greedy
+rerun-incomplete: True
+dry-run: False
+verbose: False
+nolock: True
+notemp: True
+rerun-triggers: 'mtime'
+max-status-checks-per-second: 1
+retries: 0

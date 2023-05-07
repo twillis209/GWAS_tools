@@ -13,6 +13,7 @@ rule rehead:
         pan_ukb_beta_column = 'beta_EUR',
         pan_ukb_se_column = 'se_EUR'
     threads: 8
+    conda: "envs/gwas_tools.yaml"
     script: "scripts/rehead.R"
 
 rule fix_alleles_and_id:
@@ -21,6 +22,7 @@ rule fix_alleles_and_id:
     output:
         temp("results/gwas_pipeline/reheaded/fixed_alleles/{input_name}.tsv.gz")
     threads: 8
+    conda: "envs/gwas_tools.yaml"
     script: "scripts/fix_alleles_and_id.R"
 
 rule check_for_minimal_column_set:
@@ -29,6 +31,7 @@ rule check_for_minimal_column_set:
     output:
         temp("results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/{input_name}.tsv.gz")
     threads: 8
+    conda: "envs/gwas_tools.yaml"
     script: "scripts/check_for_minimal_column_set.R"
 
 rule recalculate_missing_summary_statistics:
@@ -37,6 +40,7 @@ rule recalculate_missing_summary_statistics:
     output:
         temp("results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/{input_name}.tsv.gz")
     threads: 8
+    conda: "envs/gwas_tools.yaml"
     script: "scripts/recalculate_missing_sumstats.R"
 
 rule detect_build:
@@ -46,6 +50,7 @@ rule detect_build:
     output:
         temp("results/gwas_pipeline/build_detection/{input_name}.tsv")
     threads: 8
+    conda: "envs/gwas_tools.yaml"
     script: "scripts/detect_build.R"
 
 rule create_bed_file_for_liftover:
@@ -54,6 +59,7 @@ rule create_bed_file_for_liftover:
     output:
         temp("results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/{input_name}.bed")
     threads: 8
+    conda: "envs/gwas_tools.yaml"
     script: "scripts/create_bedfile.R"
 
 rule prepare_file_for_liftover:
@@ -64,6 +70,7 @@ rule prepare_file_for_liftover:
         prepared = temp("results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/{input_name}_prepared.tsv.gz"),
         build = temp("results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/{input_name}_build.txt")
     threads: 8
+    conda: "envs/gwas_tools.yaml"
     script: "scripts/prepare_file_for_liftover.R"
 
 rule liftover:
@@ -96,4 +103,5 @@ rule merge_liftovered_rows_with_summary_statistics:
     threads: 8
     output:
         "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/{input_name}-hg38.tsv.gz"
+    conda: "envs/gwas_tools.yaml"
     script: "scripts/merge_liftovered_rows_with_sumstats.R"

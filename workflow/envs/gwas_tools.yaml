@@ -3,9 +3,6 @@ channels:
 - conda-forge
 - bioconda
 dependencies:
-- python >= 3.11
-- bioconda/noarch::snakemake >= 7.25.0
-- ipython >= 8.10.0
 - r-base >= 4.2.3
 - r-data.table >= 1.14.8
 - r-stringr
