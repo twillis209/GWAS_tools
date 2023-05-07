@@ -1,6 +1,8 @@
 include: "wildcard_constraints.smk"
 include: "rules/test_rules.smk"
 
+configfile: "config/config.yaml"
+
 rule rehead:
     input:
         "resources/gwas_pipeline/{input_name}.tsv.gz"

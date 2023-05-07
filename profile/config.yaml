@@ -4,7 +4,7 @@ default-resources:
   - runtime=10
   - mem_mb=27360
 keep-going: True
-use-conda: False
+use-conda: True
 scheduler: greedy
 rerun-incomplete: True
 dry-run: False

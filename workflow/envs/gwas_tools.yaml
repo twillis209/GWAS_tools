@@ -7,3 +7,4 @@ dependencies:
 - r-data.table >= 1.14.8
 - r-stringr
 - r-magrittr
+- r-r.utils
