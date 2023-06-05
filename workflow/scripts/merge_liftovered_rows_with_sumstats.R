@@ -20,5 +20,10 @@ if('CHR38' %in% names(dat) & 'BP38' %in% names(dat)) {
 
   dat[, CHR38 := stringr::str_remove(CHR38, 'chr')]
 
+  # Update chr:bp:alt:ref SNPID to hg38 coordinates
+  if(dat[SNPID %like% "\\d+:\\d+:\\w+:\\w:", .N] > 100) {
+    dat[, SNPID := paste(CHR38, BP38, ALT, REF, sep = '_')]
+  }
+
   fwrite(dat, file = snakemake@output[[1]], sep = '\t')
 }
