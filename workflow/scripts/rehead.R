@@ -15,8 +15,8 @@ cols_to_drop <- col_names[col_names %in% snakemake@params$columns_to_drop]
 dat[, (cols_to_drop) := NULL]
 
 # chromosome column
-str_replace(col_names, "^Chr$|^chromosome$|^Chromosome$|^chr$|^Chr_ID$|^hg18chr$|^CHROMOSOME$|^#chrom$|^#CHROM$|^chrom$|^#CHR$", "CHR") %>%
- 	str_replace("^Pos$|^base_pair_location$|^BP$|^BP\\(hg19\\)$|^Position$|^POS$|^pos$|^Chr_Position$|^bp$|^position$|^Position\\(hg19\\)$|^POSITION$|^bp_hg19$|^Coordinate$|^chrloc$", "BP") %>%
+str_replace(col_names, "^Chr$|^chromosome$|^Chromosome$|^chr$|^Chr_ID$|^hg18chr$|^CHROMOSOME$|^#chrom$|^#CHROM$|^chrom$|^#CHR$|^CHR38$|^CHR19$", "CHR") %>%
+ 	str_replace("^Pos$|^base_pair_location$|^BP$|^BP\\(hg19\\)$|^Position$|^POS$|^pos$|^Chr_Position$|^bp$|^position$|^Position\\(hg19\\)$|^POSITION$|^bp_hg19$|^Coordinate$|^chrloc$|^BP38$|^BP19$", "BP") %>%
  	str_replace("^íd$|^id$|^ID$|^variant_id$|^MarkerName$|^SNP$|^rsid$|^rsids$|^SNP_Name$|^snp$|^snpid$|^SNP_ID$|^rsID$|^#SNPID$|^rs_number$|^RSID$|^rs$|^db_SNP_RS_IDMarker$|^dbSNP_RS_ID$|^Variant$","SNPID") %>%
  	str_replace("^OtherAllele$|^reference_allele$|^Ref_Allele$|^OTHER_ALLELE$|^other_allele$|^A2_other$|^NEA$|^Ref_Allele$|^Ref$|^ref$|^Allele1$|^A2$","REF") %>%
  	str_replace("^effect_allele$|^Effect_Allele$|^EffectAllele$|^A1_effect$|^RISK_ALLELE$|^EA$|^Risk_Allele$|^EFFECT_ALLELE$|^Alt$|^alt$|^Allele2$|^A1$","ALT") %>%
