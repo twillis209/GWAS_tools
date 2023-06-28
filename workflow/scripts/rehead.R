@@ -59,12 +59,22 @@ if('CHR38' %in% names(dat) & 'CHR19' %in% names(dat)) {
   # Keep newer assembly's coordinates
   dat[, CHR19 := NULL]
   setnames(dat, 'CHR38', 'CHR')
+} else if('CHR38' %in% names(dat)) {
+  setnames(dat, 'CHR38', 'CHR')
+} else if('CHR19' %in% names(dat)) {
+  setnames(dat, 'CHR19', 'CHR')
 }
+
 
 if('BP38' %in% names(dat) & 'BP19' %in% names(dat)) {
   # Keep newer assembly's coordinates
   dat[, BP19 := NULL]
   setnames(dat, 'BP38', 'BP')
+} else if('BP38' %in% names(dat)) {
+  setnames(dat, 'BP38', 'BP')
+} else if('BP19' %in% names(dat)) {
+  setnames(dat, 'BP19', 'BP')
 }
+
 
 fwrite(dat, file = snakemake@output[[1]], sep = '\t')
