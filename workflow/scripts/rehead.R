@@ -47,7 +47,7 @@ names(dat) <- updated_col_names
 
 if(!('P' %in% updated_col_names) & snakemake@params$pan_ukb_p_column %in% names(dat)) {
   setnames(dat, snakemake@params$pan_ukb_p_column, "P")
-  dat[, P := 10^(-P)]
+  dat[, P := exp(P)]
 } else {
   stop("Could not find p-value column")
 }
