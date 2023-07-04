@@ -11,7 +11,6 @@ rule rehead:
     params:
         columns_to_drop = config["extraneous_columns"],
         pan_ukb_p_column = 'pval_EUR',
-        pan_ukb_neglog10_p_column = 'neglog10_pval_EUR',
         pan_ukb_beta_column = 'beta_EUR',
         pan_ukb_se_column = 'se_EUR'
     threads: 8

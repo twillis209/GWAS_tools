@@ -1,4 +1,4 @@
-.libPaths()
+.libP  aths()
 
 library(data.table)
 setDTthreads(snakemake@threads)
@@ -23,7 +23,7 @@ str_replace(col_names, "^Chr$|^chromosome$|^Chromosome$|^chr$|^Chr_ID$|^hg18chr$
  	str_replace("^Beta$|^beta$|^Effect$|^effect$|^EFFECT$|^beta_SNP_add$|^EFFECT_ALT$|^effB$|^beta_EUR$|^all_inv_var_meta_beta$","BETA") %>%
  	str_replace("^standard_error$|^StdErr$|^stderr$|^sebeta_SNP_add$|^se$|^STDERR$|^sebeta$|^se_effB$|^se_EUR$|^all_inv_var_meta_sebeta$|^LOG\\(OR\\)_SE$","SE") %>%
  	str_replace("^odds_ratio$|^Odds_ratio$|^or$|^OddsRatio$|^OR\\(A1\\)$|^ORX$","OR") %>%
- 	str_replace("^p_value$|^P.value$|^pvalue$|^P-value$|^pval$|^p.value$|^Pval$|^PVALUE$|^Pvalue$|^P_VALUE$|^P-val$|^p$|^All.p.value$|^P_value$|^p-value$|^GC-adjusted_P_$|^Chi-Squared__P$|^P1df$|^pval_EUR$|^all_inv_var_meta_p$","P") %>%
+ 	str_replace("^p_value$|^P.value$|^pvalue$|^P-value$|^pval$|^p.value$|^Pval$|^PVALUE$|^Pvalue$|^P_VALUE$|^P-val$|^p$|^All.p.value$|^P_value$|^p-value$|^GC-adjusted_P_$|^Chi-Squared__P$|^P1df$|^all_inv_var_meta_p$","P") %>%
  	str_replace("Log10p","LOG10P") %>%
  	str_replace("-log10_p-value","-LOG10P") %>%
  	str_replace("^effect_allele_frequency$|^<maf$|^<MAF$","ALT_FREQ") %>%
@@ -48,10 +48,12 @@ str_replace(col_names, "^Chr$|^chromosome$|^Chromosome$|^chr$|^Chr_ID$|^hg18chr$
 
 names(dat) <- updated_col_names
 
-if(!('P' %in% updated_col_names) & snakemake@params$pan_ukb_neglog10_p_column %in% updated_col_names) {
-  setnames(dat, snakemake@params$pan_ukb_neglog10_p_column, "P")
+if(!('P' %in% updated_col_names) & snakemake@params$pan_ukb_p_column %in% names(dat)) {
+  setnames(dat, snakemake@params$pan_ukb_p_column, "P")
 
   dat[, P := 10^(-P)]
+} else {
+  stop("Could not find p-value column")
 }
 
 
