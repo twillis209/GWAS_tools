@@ -40,7 +40,6 @@ str_replace(col_names, "^Chr$|^chromosome$|^Chromosome$|^chr$|^Chr_ID$|^hg18chr$
  	str_replace("^Rsq$","RSQ") %>%
  	str_replace("^MARKER$|^íd$|^Chr:Position$","CHR:BP") %>%
   str_replace("^Zscore$|^ZSCORE$|^Z_STAT$","Z") %>%
-  str_replace(sprintf("^%s$", snakemake@params$pan_ukb_p_column), "P") %>%
   str_replace(sprintf("^%s$", snakemake@params$pan_ukb_beta_column), "BETA") %>%
   str_replace(sprintf("^%s$", snakemake@params$pan_ukb_se_column), "SE") -> updated_col_names
 
@@ -48,7 +47,6 @@ names(dat) <- updated_col_names
 
 if(!('P' %in% updated_col_names) & snakemake@params$pan_ukb_p_column %in% names(dat)) {
   setnames(dat, snakemake@params$pan_ukb_p_column, "P")
-
   dat[, P := 10^(-P)]
 } else {
   stop("Could not find p-value column")
