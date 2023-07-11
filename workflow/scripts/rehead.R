@@ -10,11 +10,13 @@ col_names <- names(dat)
 
 cols_to_drop <- col_names[col_names %in% snakemake@params$columns_to_drop]
 
-dat[, (cols_to_drop) := NULL]
+if(length(cols_to_drop) > 0) {
+  dat[, (cols_to_drop) := NULL]
+}
 
 # chromosome column
 str_replace(col_names, "^Chr$|^chromosome$|^Chromosome$|^chr$|^Chr_ID$|^hg18chr$|^CHROMOSOME$|^#chrom$|^#CHROM$|^chrom$|^#CHR$", "CHR") %>%
- 	str_replace("^Pos$|^base_pair_location$|^BP$|^BP\\(hg19\\)$|^Position$|^POS$|^pos$|^Chr_Position$|^bp$|^position$|^Position\\(hg19\\)$|^POSITION$|^bp_hg19$|^Coordinate$|^chrloc$", "BP") %>%
+ 	str_replace("^Pos$|^base_pair_location$|^BP$|^BP\\(hg19\\)$|^Position$|^POS$|^pos$|^Chr_Position$|^bp$|^position$|^Position\\(hg19\\)$|^POSITION$|^bp_hg19$|^BP_hg19$|^Coordinate$|^chrloc$", "BP") %>%
  	str_replace("^íd$|^id$|^ID$|^variant_id$|^MarkerName$|^SNP$|^rsid$|^rsids$|^SNP_Name$|^snp$|^snpid$|^SNP_ID$|^rsID$|^#SNPID$|^rs_number$|^RSID$|^rs$|^db_SNP_RS_IDMarker$|^dbSNP_RS_ID$|^Variant$","SNPID") %>%
  	str_replace("^OtherAllele$|^reference_allele$|^Ref_Allele$|^OTHER_ALLELE$|^other_allele$|^A2_other$|^NEA$|^Ref_Allele$|^Ref$|^ref$|^Allele1$|^A2$","REF") %>%
  	str_replace("^effect_allele$|^Effect_Allele$|^EffectAllele$|^A1_effect$|^RISK_ALLELE$|^EA$|^Risk_Allele$|^EFFECT_ALLELE$|^Alt$|^alt$|^Allele2$|^A1$","ALT") %>%
@@ -48,14 +50,13 @@ names(dat) <- updated_col_names
 if(!('P' %in% updated_col_names) & snakemake@params$pan_ukb_p_column %in% names(dat)) {
   setnames(dat, snakemake@params$pan_ukb_p_column, "P")
   dat[, P := exp(P)]
-} else {
+} else if(!('P' %in% updated_col_names)) {
   stop("Could not find p-value column")
 }
 
 if(dat[P < 0 | P > 1, .N] > 0) {
   stop("One or more p-values falls outside [0, 1]")
 }
-
 
 if('CHR38' %in% names(dat) & 'CHR19' %in% names(dat)) {
   # Keep newer assembly's coordinates
