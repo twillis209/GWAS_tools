@@ -1,7 +1,11 @@
-include: "wildcard_constraints.smk"
-include: "rules/test_rules.smk"
-
 configfile: "config/config.yaml"
+
+def get_mem_mb(wildcards, threads):
+    return threads * 3420
+
+include: "wildcard_constraints.smk"
+include: "rules/1kGP.smk"
+include: "rules/test_rules.smk"
 
 rule rehead:
     input:
