@@ -119,3 +119,28 @@ rule merge_liftovered_rows_with_summary_statistics:
     conda: "envs/gwas_tools.yaml"
     group: "gwas_tools"
     script: "scripts/merge_liftovered_rows_with_sumstats.R"
+
+rule tabulate_allele_switches_using_1kG:
+    input:
+        sum_stats ="results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/{input_name}-hg38.tsv.gz",
+        legend = "results/1kG/hg38/combined.legend.gz"
+    output:
+        merged_stats_with_code = temp("results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/realigned_alleles/{input_name}_with_allele_codes.tsv.gz"),
+        table = "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/realigned_alleles/{input_name}_table.tsv.gz"
+    threads: 8
+    conda: "envs/gwas_tools.yaml"
+    group: "gwas_tools"
+    script: "scripts/tabulate_allele_switches_using_1kG.R"
+
+rule align_alleles_to_1kG:
+    input:
+        "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/realigned_alleles/{input_name}_with_allele_codes.tsv.gz"
+    output:
+        "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/realigned_alleles/{input_name}.tsv.gz"
+    params:
+        strand_policy = lambda w: config['strand_policy'][w.input_name]
+    threads: 8
+    conda: "envs/gwas_tools.yaml"
+    group: "gwas_tools"
+    script: "scripts/align_alleles_to_1kG.R"
+

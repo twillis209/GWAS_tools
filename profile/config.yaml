@@ -1,8 +1,27 @@
+jobs: 100
+local-cores: 2
 cores: 8
+cluster: "mkdir -p logs/{name} &&
+  sbatch
+  -J {name}
+  -o logs/{name}/%j.out
+  -e logs/{name}/%j.err
+  --export OMP_NUM_THREADS={threads}
+  --account MRC-BSU-SL2-CPU
+  --time {resources.runtime}
+  --nodes 1
+  --ntasks 1
+  --cpus-per-task {threads}
+  --mail-type FAIL
+  --partition cclake
+  --parsable"
 default-resources:
-  - threads=8
-  - runtime=10
-  - mem_mb=27360
+  - runtime=5
+  - tasks=1
+  - nodes=1
+  - mem_mb=3420
+group-components:
+  - 1kG=1
 keep-going: True
 use-conda: True
 scheduler: greedy
@@ -10,7 +29,9 @@ rerun-incomplete: True
 dry-run: False
 verbose: False
 nolock: True
-notemp: True
+notemp: False
 rerun-triggers: 'mtime'
 max-status-checks-per-second: 1
+cluster-status: './cluster_status.py' 
+cluster-cancel: 'scancel'
 retries: 0

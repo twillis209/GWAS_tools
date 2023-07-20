@@ -4,3 +4,5 @@ liftOver
 resources
 .snakemake
 results
+submit_with_scheduling.sh
+logs
