@@ -12,6 +12,6 @@ if(snakemake@params[['strand_policy']] == 'nonswitched') {
   stop('Behaviour not yet implemented for this strand policy')
 }
 
-dat[, c('code', 'REF.1kG', 'ALT.1kG') := NULL]
+dat[, c('code', 'REF.1kG', 'ALT.1kG', 'A.CODE', 'B.CODE') := NULL]
 
-fwrite(dat, file = snakemake@output[['aligned_stats']], sep = '\t')
+fwrite(dat, file = snakemake@output[[1]], sep = '\t')

@@ -16,6 +16,6 @@ dat[, A.CODE := paste(REF, ALT, sep = '/')]
 dat[, B.CODE := paste(REF.1kG, ALT.1kG, sep = '/')]
 dat[, code := g.class(A.CODE, B.CODE)]
 
-fwrite(dat, file = snakemake@output[['merged_stats']], sep = '\t')
+fwrite(dat, file = snakemake@output[['merged_stats_with_code']], sep = '\t')
 
 fwrite(data.table(code = g.class(dat[,A.CODE], dat[, B.CODE]))[, .N, by = code], file = snakemake@output[['table']], sep = '\t')
