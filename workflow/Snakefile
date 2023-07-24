@@ -3,6 +3,12 @@ configfile: "config/config.yaml"
 def get_mem_mb(wildcards, threads):
     return threads * 3420
 
+def get_study_specific_cols_to_drop(wildcards):
+    try:
+        return config['per_study_extraneous_columns'][w.input_name]
+    except KeyError:
+        return []
+
 include: "wildcard_constraints.smk"
 include: "rules/1kGP.smk"
 include: "rules/test_rules.smk"
@@ -14,6 +20,7 @@ rule rehead:
         temp("results/gwas_pipeline/reheaded/{input_name}.tsv.gz")
     params:
         columns_to_drop = config["extraneous_columns"],
+        study_specific_columns_to_drop = get_study_specific_cols_to_drop,
         pan_ukb_p_column = 'pval_EUR',
         pan_ukb_beta_column = 'beta_EUR',
         pan_ukb_se_column = 'se_EUR'

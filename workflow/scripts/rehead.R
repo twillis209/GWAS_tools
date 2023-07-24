@@ -79,5 +79,4 @@ if('BP38' %in% names(dat) & 'BP19' %in% names(dat)) {
   setnames(dat, 'BP19', 'BP')
 }
 
-
 fwrite(dat, file = snakemake@output[[1]], sep = '\t')

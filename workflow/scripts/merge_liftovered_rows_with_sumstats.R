@@ -16,6 +16,10 @@ if('CHR38' %in% names(dat) & 'BP38' %in% names(dat)) {
 
   dat[, CHR19 := stringr::str_remove(CHR19, 'chr')]
 
+  dat <- dat[SNPID != '.']
+
+  bedfile <- bedfile[SNPID != '.']
+
   dat <- merge(dat, bedfile, by = 'SNPID')
 
   dat[, CHR38 := stringr::str_remove(CHR38, 'chr')]
