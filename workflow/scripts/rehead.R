@@ -62,6 +62,11 @@ if(dat[P < 0 | P > 1, .N] > 0) {
   stop("One or more p-values falls outside [0, 1]")
 }
 
+if('CHR' %in% names(dat) & 'CHR38' %in% names(dat)) {
+  dat[, CHR := NULL]
+  setnames(dat, 'CHR38', 'CHR')
+}
+
 if('CHR38' %in% names(dat) & 'CHR19' %in% names(dat)) {
   # Keep newer assembly's coordinates
   dat[, CHR19 := NULL]
@@ -70,6 +75,12 @@ if('CHR38' %in% names(dat) & 'CHR19' %in% names(dat)) {
   setnames(dat, 'CHR38', 'CHR')
 } else if('CHR19' %in% names(dat)) {
   setnames(dat, 'CHR19', 'CHR')
+}
+
+
+if('BP' %in% names(dat) & 'BP38' %in% names(dat)) {
+  dat[, BP := NULL]
+  setnames(dat, 'BP38', 'BP')
 }
 
 
