@@ -54,6 +54,10 @@ if(!('P' %in% updated_col_names) & snakemake@params$pan_ukb_p_column %in% names(
   stop("Could not find p-value column")
 }
 
+if(dat[, class(P)] != 'numeric') {
+  dat[, P := as.numeric(P)]
+}
+
 if(dat[P < 0 | P > 1, .N] > 0) {
   stop("One or more p-values falls outside [0, 1]")
 }
