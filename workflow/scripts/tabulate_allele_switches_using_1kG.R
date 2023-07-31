@@ -10,6 +10,8 @@ leg_dat[, 'CHR' := tstrsplit(ID, split = ':', keep = 1)]
 
 dat <- fread(snakemake@input[['sum_stats']], sep = '\t', header = T)
 
+dat[, 'CHR38' := as.character(CHR38)]
+
 dat <- merge(dat, leg_dat[, .(CHR, BP, REF.1kG, ALT.1kG)], by.x = c('CHR38', 'BP38'), by.y = c('CHR', 'BP'), all.x = T)
 
 dat[, A.CODE := paste(REF, ALT, sep = '/')]

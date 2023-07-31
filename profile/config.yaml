@@ -1,6 +1,6 @@
 jobs: 100
 local-cores: 2
-cores: 8
+cores: 16
 cluster: "mkdir -p logs/{name} &&
   sbatch
   -J {name}

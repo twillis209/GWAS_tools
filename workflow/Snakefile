@@ -134,7 +134,7 @@ rule tabulate_allele_switches_using_1kG:
     output:
         merged_stats_with_code = temp("results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/realigned_alleles/{input_name}_with_allele_codes.tsv.gz"),
         table = "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/realigned_alleles/{input_name}_table.tsv.gz"
-    threads: 8
+    threads: 16
     resources:
         runtime = 20
     conda: "envs/gwas_tools.yaml"
@@ -148,7 +148,7 @@ rule align_alleles_to_1kG:
         "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/realigned_alleles/{input_name}.tsv.gz"
     params:
         strand_policy = lambda w: config['strand_policy'][w.input_name]
-    threads: 8
+    threads: 16
     resources:
         runtime = 20
     conda: "envs/gwas_tools.yaml"
