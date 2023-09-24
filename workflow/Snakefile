@@ -136,7 +136,7 @@ rule tabulate_allele_switches_using_1kG:
         table = "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/realigned_alleles/{input_name}_table.tsv.gz"
     threads: 16
     resources:
-        runtime = 20
+        runtime = 30
     conda: "envs/gwas_tools.yaml"
     group: "gwas_tools"
     script: "scripts/tabulate_allele_switches_using_1kG.R"
