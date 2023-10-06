@@ -10,6 +10,10 @@ col_names <- names(dat)
 
 cols_to_drop <- col_names[col_names %in% snakemake@params$columns_to_drop]
 
+if(!is.null(snakemake@params$study_specific_columns_to_drop)) {
+  cols_to_drop <- c(cols_to_drop, col_names[col_names %in% snakemake@params$study_specific_columns_to_drop])
+}
+
 if(length(cols_to_drop) > 0) {
   dat[, (cols_to_drop) := NULL]
 }
