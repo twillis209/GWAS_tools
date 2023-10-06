@@ -31,7 +31,7 @@ str_replace(col_names, "^Chr$|^chromosome$|^Chromosome$|^chr$|^Chr_ID$|^hg18chr$
  	str_replace("Log10p","LOG10P") %>%
  	str_replace("-log10_p-value","-LOG10P") %>%
  	str_replace("^effect_allele_frequency$|^<maf$|^<MAF$","ALT_FREQ") %>%
- # Caution! Sometimes "other_allele" means effect allele", check papers prior to run the script, and pre-rename accordingly.
+ # Caution! Sometimes "other_allele" means effect allele", check papers prior to running the script, and pre-rename accordingly.
  	str_replace("^EMP_Beta$","EMP_BETA") %>%
  	str_replace("^EMP1$","EMP_P") %>%
  	str_replace("^EMP_se$","EMP_SE") %>%
