@@ -9,22 +9,23 @@ if(snakemake@params[['strand_policy']] == 'nonswitched') {
   dat[code == 'rev', `:=` (REF = REF.1kG, ALT = ALT.1kG, BETA = -1 * BETA)]
 
   if('OR' %in% names(dat)) {
-    dat[code == 'rev', OR := 1./OR]
+    dat[code == 'rev', OR := 1/OR]
   }
 
   if('Z' %in% names(dat)) {
     dat[code == 'rev', Z := -1 * Z]
   }
 
-  dat[(code == 'ambig' & (REF == ALT.1kG & ALT == REF.1kG)), `:=` (REF = REF.1kG, ALT = ALT.1kG, BETA = -1 * BETA)]
+  if('OR' %in% names(dat)) {
+    dat[(code == 'ambig' & (REF == ALT.1kG & ALT == REF.1kG)), OR := 1/OR]
+  }
 
   if('Z' %in% names(dat)) {
-    dat[code == 'ambig', Z := -1 * Z]
+    dat[(code == 'ambig' & (REF == ALT.1kG & ALT == REF.1kG)), Z := -1 * Z]
   }
 
-  if('OR' %in% names(dat)) {
-    dat[code == 'ambig', OR := 1./OR]
-  }
+  dat[(code == 'ambig' & (REF == ALT.1kG & ALT == REF.1kG)), `:=` (REF = REF.1kG, ALT = ALT.1kG, BETA = -1 * BETA)]
+
 } else {
   stop('Behaviour not yet implemented for this strand policy')
 }
