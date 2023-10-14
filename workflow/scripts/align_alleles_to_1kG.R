@@ -3,29 +3,18 @@ setDTthreads(snakemake@threads)
 
 dat <- fread(snakemake@input[[1]], sep = '\t')
 
-if(snakemake@params[['strand_policy']] == 'nonswitched') {
-  dat <- dat[code %in% c('nochange', 'rev', 'ambig')]
+dat <- dat[code %in% snakemake@params[['strand_policy']][['codes_to_retain']]]
 
-  dat[code == 'rev', `:=` (REF = REF.1kG, ALT = ALT.1kG, BETA = -1 * BETA)]
+if(snakemake@params[['strand_policy']][['status']] == 'nonswitched') {
+  dat[code %in% snakemake@params[['strand_policy']][['flip']], `:=` (REF = REF.1kG, ALT = ALT.1kG, BETA = -1 * BETA)]
 
   if('OR' %in% names(dat)) {
-    dat[code == 'rev', OR := 1/OR]
+    dat[code %in% snakemake@params[['strand_policy']][['flip']], OR := 1/OR]
   }
 
   if('Z' %in% names(dat)) {
-    dat[code == 'rev', Z := -1 * Z]
+    dat[code %in% snakemake@params[['strand_policy']][['flip']], Z := -1 * Z]
   }
-
-  if('OR' %in% names(dat)) {
-    dat[(code == 'ambig' & (REF == ALT.1kG & ALT == REF.1kG)), OR := 1/OR]
-  }
-
-  if('Z' %in% names(dat)) {
-    dat[(code == 'ambig' & (REF == ALT.1kG & ALT == REF.1kG)), Z := -1 * Z]
-  }
-
-  dat[(code == 'ambig' & (REF == ALT.1kG & ALT == REF.1kG)), `:=` (REF = REF.1kG, ALT = ALT.1kG, BETA = -1 * BETA)]
-
 } else {
   stop('Behaviour not yet implemented for this strand policy')
 }
