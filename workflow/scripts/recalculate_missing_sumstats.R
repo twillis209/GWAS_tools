@@ -18,4 +18,6 @@ if(!('SE' %in% names(dat))) {
   }
 }
 
+dat[, c('OR', 'Z') := NULL]
+
 fwrite(dat, file = snakemake@output[[1]], sep = '\t')
