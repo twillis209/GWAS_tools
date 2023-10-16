@@ -15,7 +15,7 @@ if(snakemake@params[['strand_policy']][['status']] == 'nonswitched') {
   }
 
   if('rev' %in%  snakemake@params[['strand_policy']][['flip']]) {
-    dat[code == 'rev', `:=` (REF = ALT.1kG, ALT = REF.1kG, BETA = -1 * BETA)]
+    dat[code == 'rev', `:=` (REF = REF.1kG, ALT = ALT.1kG, BETA = -1 * BETA)]
   }
 
   if('revcomp' %in%  snakemake@params[['strand_policy']][['flip']]) {
