@@ -67,8 +67,8 @@ rule tabulate_allele_switches_using_1kG:
         merged_stats_with_code = temp("results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/{input_name}_with_allele_codes.tsv.gz"),
         table = "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/{input_name}_table.tsv.gz"
     params:
-        chr_col = 'CHR19',
-        bp_col = 'BP19'
+        chr_col = 'CHR',
+        bp_col = 'BP'
     threads: 16
     resources:
         runtime = 45
