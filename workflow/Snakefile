@@ -144,7 +144,7 @@ rule merge_liftovered_rows_with_summary_statistics:
     group: "gwas_tools"
     script: "scripts/merge_liftovered_rows_with_sumstats.R"
 
-use rule tabulate_allele_switches_using_1kG as tabulate_allele_switches_using_hg38_1kG with:
+rule tabulate_allele_switches_using_hg38_1kG:
     input:
         sum_stats ="results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/{input_name}-hg38.tsv.gz",
         legend = "results/1kG/hg38/combined.legend.gz"
@@ -154,6 +154,12 @@ use rule tabulate_allele_switches_using_1kG as tabulate_allele_switches_using_hg
     params:
         chr_col = 'CHR38',
         bp_col = 'BP38'
+    threads: 16
+    resources:
+        runtime = 45
+    conda: "envs/gwas_tools.yaml"
+    group: "gwas_tools"
+    script: "scripts/tabulate_allele_switches_using_1kG.R"
 
 rule align_alleles_to_1kG:
     input:
