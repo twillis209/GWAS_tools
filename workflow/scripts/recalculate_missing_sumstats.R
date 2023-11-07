@@ -7,6 +7,10 @@ if('OR' %in% names(dat) & !('BETA' %in% names(dat))) {
   dat[, BETA := log(OR)]
 }
 
+if('SNPID' %in% names(dat)) {
+  dat[, SNPID := paste(CHR, BP, REF, ALT, sep = ':')]
+}
+
 if(!('SE' %in% names(dat))) {
   if(('BETA' %in% names(dat) & 'P' %in% names(dat))) {
     dat[, Z := sign(BETA)* abs(qnorm(P/2))]
