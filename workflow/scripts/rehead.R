@@ -10,8 +10,8 @@ col_names <- names(dat)
 
 cols_to_drop <- col_names[col_names %in% snakemake@params$columns_to_drop]
 
-if(!is.null(snakemake@params$study_specific_columns_to_drop)) {
-  cols_to_drop <- c(cols_to_drop, col_names[col_names %in% snakemake@params$study_specific_columns_to_drop])
+if(!is.null(snakemake@params$study_specific_params$extraneous_columns)) {
+  cols_to_drop <- c(cols_to_drop, col_names[col_names %in% snakemake@params$study_specific_params$extraneous_columns])
 }
 
 if(length(cols_to_drop) > 0) {
@@ -22,8 +22,6 @@ if(length(cols_to_drop) > 0) {
 str_replace(col_names, "^Chr$|^chromosome$|^Chromosome$|^chr$|^Chr_ID$|^hg18chr$|^CHROMOSOME$|^#chrom$|^#CHROM$|^chrom$|^#CHR$", "CHR") %>%
  	str_replace("^Pos$|^base_pair_location$|^BP$|^BP\\(hg19\\)$|^Position$|^POS$|^pos$|^Chr_Position$|^bp$|^position$|^Position\\(hg19\\)$|^POSITION$|^bp_hg19$|^BP_hg19$|^Coordinate$|^chrloc$", "BP") %>%
  	str_replace("^íd$|^id$|^ID$|^variant_id$|^MarkerName$|^SNP$|^rsid$|^rsids$|^SNP_Name$|^snp$|^snpid$|^SNP_ID$|^rsID$|^#SNPID$|^rs_number$|^RSID$|^rs$|^db_SNP_RS_IDMarker$|^dbSNP_RS_ID$|^Variant$","SNPID") %>%
- 	str_replace("^OtherAllele$|^reference_allele$|^Ref_Allele$|^OTHER_ALLELE$|^other_allele$|^A2_other$|^NEA$|^Ref_Allele$|^Ref$|^ref$|^Allele1$|^A2$","REF") %>%
- 	str_replace("^effect_allele$|^Effect_Allele$|^EffectAllele$|^A1_effect$|^RISK_ALLELE$|^EA$|^Risk_Allele$|^EFFECT_ALLELE$|^Alt$|^alt$|^Allele2$|^A1$","ALT") %>%
  	str_replace("^Beta$|^beta$|^Effect$|^effect$|^EFFECT$|^beta_SNP_add$|^EFFECT_ALT$|^effB$|^beta_EUR$|^all_inv_var_meta_beta$","BETA") %>%
  	str_replace("^standard_error$|^StdErr$|^stderr$|^sebeta_SNP_add$|^se$|^STDERR$|^sebeta$|^se_effB$|^se_EUR$|^all_inv_var_meta_sebeta$|^LOG\\(OR\\)_SE$","SE") %>%
  	str_replace("^odds_ratio$|^Odds_ratio$|^or$|^OddsRatio$|^OR\\(A1\\)$|^ORX$","OR") %>%
@@ -31,7 +29,6 @@ str_replace(col_names, "^Chr$|^chromosome$|^Chromosome$|^chr$|^Chr_ID$|^hg18chr$
  	str_replace("Log10p","LOG10P") %>%
  	str_replace("-log10_p-value","-LOG10P") %>%
  	str_replace("^effect_allele_frequency$|^<maf$|^<MAF$","ALT_FREQ") %>%
- # Caution! Sometimes "other_allele" means effect allele", check papers prior to running the script, and pre-rename accordingly.
  	str_replace("^EMP_Beta$","EMP_BETA") %>%
  	str_replace("^EMP1$","EMP_P") %>%
  	str_replace("^EMP_se$","EMP_SE") %>%
@@ -48,6 +45,19 @@ str_replace(col_names, "^Chr$|^chromosome$|^Chromosome$|^chr$|^Chr_ID$|^hg18chr$
   str_replace("^Zscore$|^ZSCORE$|^Z_STAT$","Z") %>%
   str_replace(sprintf("^%s$", snakemake@params$pan_ukb_beta_column), "BETA") %>%
   str_replace(sprintf("^%s$", snakemake@params$pan_ukb_se_column), "SE") -> updated_col_names
+
+# Caution! Sometimes "other_allele" means effect allele", e.g. the LADA data set, check papers prior to running the script, and pre-rename accordingly.
+if(!is.null(snakemake@params$study_specific_params$ref)) {
+  updated_col_names <- str_replace(updated_col_names, snakemake@params$study_specific_params$ref, 'REF')
+} else {
+  updated_col_names <- str_replace(updated_col_names, "^OtherAllele$|^reference_allele$|^Ref_Allele$|^OTHER_ALLELE$|^other_allele$|^A2_other$|^NEA$|^Ref_Allele$|^Ref$|^ref$|^Allele1$|^A2$","REF")
+}
+
+if(!is.null(snakemake@params$study_specific_params$alt)) {
+  updated_col_names <- str_replace(updated_col_names, snakemake@params$study_specific_params$alt, 'ALT')
+} else {
+  updated_col_names <- str_replace(updated_col_names, "^effect_allele$|^Effect_Allele$|^EffectAllele$|^A1_effect$|^RISK_ALLELE$|^EA$|^Risk_Allele$|^EFFECT_ALLELE$|^Alt$|^alt$|^Allele2$|^A1$","ALT")
+}
 
 names(dat) <- updated_col_names
 
