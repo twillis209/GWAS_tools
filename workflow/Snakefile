@@ -14,7 +14,7 @@ rule rehead:
         temp("results/gwas_pipeline/reheaded/{input_name}.tsv.gz")
     params:
         columns_to_drop = config.get('extraneous_columns'),
-        study_specific_columns_to_drop = lambda w: config.get(w.input_name).get('per_study_extraneous_columns'),
+        study_specific_params = = lambda w: config.get(w.input_name),
         pan_ukb_p_column = 'pval_EUR',
         pan_ukb_beta_column = 'beta_EUR',
         pan_ukb_se_column = 'se_EUR'
