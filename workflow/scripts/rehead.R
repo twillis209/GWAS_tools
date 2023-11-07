@@ -50,13 +50,13 @@ str_replace(col_names, "^Chr$|^chromosome$|^Chromosome$|^chr$|^Chr_ID$|^hg18chr$
 if(!is.null(snakemake@params$study_specific_params$ref)) {
   updated_col_names <- str_replace(updated_col_names, snakemake@params$study_specific_params$ref, 'REF')
 } else {
-  updated_col_names <- str_replace(updated_col_names, "^OtherAllele$|^reference_allele$|^Ref_Allele$|^OTHER_ALLELE$|^other_allele$|^A2_other$|^NEA$|^Ref_Allele$|^Ref$|^ref$|^Allele1$|^A2$","REF")
+  updated_col_names <- str_replace(updated_col_names, "^OtherAllele$|^reference_allele$|^Ref_Allele$|^OTHER_ALLELE$|^other_allele$|^A2_other$|^NEA$|^Ref_Allele$|^Ref$|^ref$|^Allele1$|^A2$", "REF")
 }
 
 if(!is.null(snakemake@params$study_specific_params$alt)) {
   updated_col_names <- str_replace(updated_col_names, snakemake@params$study_specific_params$alt, 'ALT')
 } else {
-  updated_col_names <- str_replace(updated_col_names, "^effect_allele$|^Effect_Allele$|^EffectAllele$|^A1_effect$|^RISK_ALLELE$|^EA$|^Risk_Allele$|^EFFECT_ALLELE$|^Alt$|^alt$|^Allele2$|^A1$","ALT")
+  updated_col_names <- str_replace(updated_col_names, "^effect_allele$|^Effect_Allele$|^EffectAllele$|^A1_effect$|^RISK_ALLELE$|^EA$|^Risk_Allele$|^EFFECT_ALLELE$|^Alt$|^alt$|^Allele2$|^A1$", "ALT")
 }
 
 names(dat) <- updated_col_names
