@@ -4,7 +4,7 @@ setDTthreads(snakemake@threads)
 library(magrittr)
 library(stringr)
 
-dat <- fread(snakemake@input[[1]], header = T, sep = '\t')
+dat <- fread(snakemake@input[[1]])
 
 col_names <- names(dat)
 
