@@ -116,6 +116,7 @@ rule make_1kG_sex_file:
 
         ped.to_csv(output[0], index = False, sep = '\t')
 
+# NB: SNPs only
 rule vcf_to_pgen:
     input:
         vcf = "resources/1kG/{assembly}/{chr}.vcf.gz",

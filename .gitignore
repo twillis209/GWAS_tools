@@ -6,3 +6,4 @@ resources
 results
 submit_with_scheduling.sh
 logs
+tmp.R
