@@ -3,7 +3,7 @@ setDTthreads(snakemake@threads)
 
 dat <- fread(snakemake@input[[1]], header = T, sep = '\t')
 
-if('OR' %in% names(dat) & !('BETA' %in% names(dat))) {
+if('OR' %in% names(dat) & (!('BETA' %in% names(dat)) | all(dat[, is.na(BETA)]))) {
   dat[, BETA := log(OR)]
 }
 
@@ -20,15 +20,6 @@ if(!('SE' %in% names(dat))) {
   } else {
     stop("No SE column and need BETA and P or BETA and Z to calculate it")
   }
-}
-
-if(!('BETA' %in% names(dat)) | all(dat[is.na(BETA)])) {
-  if('OR' %in% names(dat)) {
-    dat[, BETA := log(OR)]
-  } else {
-    stop('No valid BETA and requisite columns to compute it are absent')
-  }
-
 }
 
 dat[, c('OR', 'Z') := NULL]
