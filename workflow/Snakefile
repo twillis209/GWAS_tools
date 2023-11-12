@@ -60,7 +60,7 @@ rule recalculate_missing_summary_statistics:
 rule tabulate_allele_switches_using_1kG:
     input:
         sum_stats = "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/{input_name}.tsv.gz",
-        legend = "results/1kG/hg19/eur/snps_only/combined.legend.gz"
+        legend = "results/1kG/hg19/eur/snps_only/005/combined.legend.gz"
     output:
         merged_stats_with_code = temp("results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/{input_name}_with_allele_codes.tsv.gz"),
         table = "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/{input_name}_table.tsv.gz"
@@ -145,7 +145,7 @@ rule merge_liftovered_rows_with_summary_statistics:
 rule tabulate_allele_switches_using_hg38_1kG:
     input:
         sum_stats ="results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/{input_name}-hg38.tsv.gz",
-        legend = "results/1kG/hg38/eur/snps_only/combined.legend.gz"
+        legend = "results/1kG/hg38/eur/snps_only/005/combined.legend.gz"
     output:
         merged_stats_with_code = temp("results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/realigned_alleles/{input_name}_with_allele_codes.tsv.gz"),
         table = "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/realigned_alleles/{input_name}_table.tsv.gz"
