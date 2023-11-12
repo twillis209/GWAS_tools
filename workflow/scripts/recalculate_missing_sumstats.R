@@ -22,6 +22,15 @@ if(!('SE' %in% names(dat))) {
   }
 }
 
+if(!('BETA' %in% names(dat)) | all(dat[is.na(BETA)])) {
+  if('OR' %in% names(dat)) {
+    dat[, BETA := log(OR)]
+  } else {
+    stop('No valid BETA and requisite columns to compute it are absent')
+  }
+
+}
+
 dat[, c('OR', 'Z') := NULL]
 
 fwrite(dat, file = snakemake@output[[1]], sep = '\t')
