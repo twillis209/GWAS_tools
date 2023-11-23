@@ -165,7 +165,8 @@ rule align_alleles_to_1kG:
     output:
         "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/realigned_alleles/{input_name}.tsv.gz"
     params:
-        strand_policy = lambda w: config.get(w.input_name)
+        strand_policy = lambda w: config.get(w.input_name),
+        retentions = lambda w: config.get('snps_to_retain')
     threads: 16
     resources:
         runtime = 20
