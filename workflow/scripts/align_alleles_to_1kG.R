@@ -3,11 +3,11 @@ setDTthreads(snakemake@threads)
 
 dat <- fread(snakemake@input[[1]], sep = '\t')
 
-dat <- dat[code %in% snakemake@params[['strand_policy']][['codes_to_retain']]]
-
 # Rescue the SNPs we intend to retain if they can possibly be dropped
 ret_dat <- dat[SNPID %in% snakemake@params[['retentions']]]
 dat <- dat[!(SNPID %in% snakemake@params[['retentions']])]
+
+dat <- dat[code %in% snakemake@params[['strand_policy']][['codes_to_retain']]]
 
 if('ambig' %in% snakemake@params[['strand_policy']][['flip']]) {
   # Drop ambig variants which neither need flipping nor can be fixed with a flip
@@ -45,7 +45,7 @@ if('revcomp' %in%  snakemake@params[['strand_policy']][['flip']]) {
 }
 
 if(ret_dat[, .N] > 0) {
-  dat <- rbindlist(dat, ret_dat)
+  dat <- rbindlist(list(dat, ret_dat))
 }
 
 dat[, c('code', 'REF.1kG', 'ALT.1kG', 'A.CODE', 'B.CODE') := NULL]
