@@ -3,8 +3,12 @@ setDTthreads(snakemake@threads)
 
 dat <- fread(snakemake@input[[1]], header = T, sep = '\t')
 
-if('OR' %in% names(dat) & (!('BETA' %in% names(dat)) | all(dat[, is.na(BETA)]))) {
+if('OR' %in% names(dat) & !('BETA' %in% names(dat))) {
   dat[, BETA := log(OR)]
+} else if('OR' %in% names(dat) & 'BETA' %in% names(dat)) {
+  if(all(dat[, is.na(BETA)])) {
+    dat[, BETA := log(OR)]
+  }
 }
 
 if('SNPID' %in% names(dat)) {
