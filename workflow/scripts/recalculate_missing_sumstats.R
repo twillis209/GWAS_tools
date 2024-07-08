@@ -12,6 +12,7 @@ if('OR' %in% names(dat) & !('BETA' %in% names(dat))) {
 }
 
 if('SNPID' %in% names(dat)) {
+  dat[, SNPID := NULL]
   dat[, SNPID := paste(CHR, BP, REF, ALT, sep = ':')]
   dat <- dat[!(SNPID %like% '\\s')]
 }
