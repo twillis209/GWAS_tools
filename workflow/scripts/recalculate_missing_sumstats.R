@@ -30,4 +30,9 @@ if(!('SE' %in% names(dat))) {
 
 dat[, c('OR', 'Z') := NULL]
 
+if(!is.null(snakemake@params$sdY_est)) {
+  dat[, BETA := (1./snakemake@params$sdY_est) * BETA]
+  dat[, SE := (1./snakemake@params$sdY_est) * SE]
+}
+
 fwrite(dat, file = snakemake@output[[1]], sep = '\t')

@@ -52,6 +52,8 @@ rule recalculate_missing_summary_statistics:
         "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/{input_name}.tsv.gz"
     output:
         temp("results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/{input_name}.tsv.gz")
+    params:
+        sdY_est = None
     threads: 8
     conda: "envs/gwas_tools.yaml"
     group: "gwas_tools"
