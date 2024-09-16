@@ -19,7 +19,7 @@ if(length(cols_to_drop) > 0) {
 }
 
 # chromosome column
-str_replace(col_names, "^Chr$|^chromosome$|^Chromosome$|^chr$|^Chr_ID$|^hg18chr$|^CHROMOSOME$|^#chrom$|^#CHROM$|^CHROM$|^chrom$|^#CHR$", "CHR") %>%
+str_replace(col_names, "^Chr$|^chromosome$|^Chromosome$|^chr$|^Chr_ID$|^hg18chr$|^CHROMOSOME$|^#chrom$|^#CHROM$|^CHROM$|^chrom$|^Chrom$|^#CHR$", "CHR") %>%
  	str_replace("^Pos$|^base_pair_location$|^BP$|^BP\\(hg19\\)$|^Position$|^POS$|^pos$|^Chr_Position$|^bp$|^position$|^Position\\(hg19\\)$|^POSITION$|^bp_hg19$|^BP_hg19$|^Coordinate$|^chrloc$", "BP") %>%
  	str_replace("^íd$|^id$|^ID$|^variant_id$|^MarkerName$|^SNP$|^rsid$|^rsids$|^SNP_Name$|^snp$|^snpid$|^SNP_ID$|^rsID$|^#SNPID$|^rs_number$|^RSID$|^rs$|^db_SNP_RS_IDMarker$|^dbSNP_RS_ID$|^Variant$","SNPID") %>%
  	str_replace("^Beta$|^beta$|^Effect$|^effect$|^EFFECT$|^beta_SNP_add$|^EFFECT_ALT$|^effB$|^beta_EUR$|^all_inv_var_meta_beta$|^frequentist_add_beta_1$","BETA") %>%
@@ -50,13 +50,13 @@ str_replace(col_names, "^Chr$|^chromosome$|^Chromosome$|^chr$|^Chr_ID$|^hg18chr$
 if(!is.null(snakemake@params$study_specific_params$ref)) {
   updated_col_names <- str_replace(updated_col_names, snakemake@params$study_specific_params$ref, 'REF')
 } else {
-  updated_col_names <- str_replace(updated_col_names, "^OtherAllele$|^reference_allele$|^Ref_Allele$|^OTHER_ALLELE$|^other_allele$|^A2_other$|^NEA$|^Ref_Allele$|^Ref$|^ref$|^Allele1$|^A2$", "REF")
+  updated_col_names <- str_replace(updated_col_names, "^OtherAllele$|^otherAllele$|^reference_allele$|^Ref_Allele$|^OTHER_ALLELE$|^other_allele$|^A2_other$|^NEA$|^Ref_Allele$|^Ref$|^ref$|^Allele1$|^A2$", "REF")
 }
 
 if(!is.null(snakemake@params$study_specific_params$alt)) {
   updated_col_names <- str_replace(updated_col_names, snakemake@params$study_specific_params$alt, 'ALT')
 } else {
-  updated_col_names <- str_replace(updated_col_names, "^effect_allele$|^Effect_Allele$|^EffectAllele$|^A1_effect$|^RISK_ALLELE$|^EA$|^Risk_Allele$|^EFFECT_ALLELE$|^Alt$|^alt$|^Allele2$|^A1$", "ALT")
+  updated_col_names <- str_replace(updated_col_names, "^effect_allele$|^effectAllele$|^Effect_Allele$|^EffectAllele$|^A1_effect$|^RISK_ALLELE$|^EA$|^Risk_Allele$|^EFFECT_ALLELE$|^Alt$|^alt$|^Allele2$|^A1$", "ALT")
 }
 
 names(dat) <- updated_col_names
