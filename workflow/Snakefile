@@ -1,7 +1,9 @@
+from snakemake.utils import min_version
+min_version("8.0")
+
 configfile: "config/config.yaml"
 
-def get_mem_mb(wildcards, threads):
-    return threads * 3420
+container: "docker://twillis209/gwas-tools:latest"
 
 include: "wildcard_constraints.smk"
 include: "rules/test_rules.smk"
@@ -23,7 +25,6 @@ rule rehead:
         pan_ukb_beta_column = 'beta_EUR',
         pan_ukb_se_column = 'se_EUR'
     threads: 8
-    conda: "envs/gwas_tools.yaml"
     group: "gwas_tools"
     script: "scripts/rehead.R"
 
@@ -33,7 +34,6 @@ rule fix_alleles_and_id:
     output:
         temp("results/gwas_pipeline/reheaded/fixed_alleles/{input_name}.tsv.gz")
     threads: 8
-    conda: "envs/gwas_tools.yaml"
     group: "gwas_tools"
     script: "scripts/fix_alleles_and_id.R"
 
@@ -43,7 +43,6 @@ rule check_for_minimal_column_set:
     output:
         temp("results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/{input_name}.tsv.gz")
     threads: 8
-    conda: "envs/gwas_tools.yaml"
     group: "gwas_tools"
     script: "scripts/check_for_minimal_column_set.R"
 
@@ -55,7 +54,6 @@ rule recalculate_missing_summary_statistics:
     params:
         sdY_est = None
     threads: 8
-    conda: "envs/gwas_tools.yaml"
     group: "gwas_tools"
     script: "scripts/recalculate_missing_sumstats.R"
 
@@ -72,7 +70,6 @@ rule tabulate_allele_switches_using_1kG:
     threads: 16
     resources:
         runtime = 45
-    conda: "envs/gwas_tools.yaml"
     group: "gwas_tools"
     script: "scripts/tabulate_allele_switches_using_1kG.R"
 
@@ -83,7 +80,6 @@ rule detect_build:
     output:
         temp("results/gwas_pipeline/build_detection/{input_name}.tsv")
     threads: 8
-    conda: "envs/gwas_tools.yaml"
     group: "gwas_tools"
     script: "scripts/detect_build.R"
 
@@ -93,7 +89,6 @@ rule create_bed_file_for_liftover:
     output:
         temp("results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/{input_name}.bed")
     threads: 8
-    conda: "envs/gwas_tools.yaml"
     group: "gwas_tools"
     script: "scripts/create_bedfile.R"
 
@@ -105,7 +100,6 @@ rule prepare_file_for_liftover:
         prepared = temp("results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/{input_name}_prepared.tsv.gz"),
         build = temp("results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/{input_name}_build.txt")
     threads: 8
-    conda: "envs/gwas_tools.yaml"
     group: "gwas_tools"
     script: "scripts/prepare_file_for_liftover.R"
 
@@ -140,7 +134,6 @@ rule merge_liftovered_rows_with_summary_statistics:
     threads: 8
     output:
         "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/{input_name}-hg38.tsv.gz"
-    conda: "envs/gwas_tools.yaml"
     group: "gwas_tools"
     script: "scripts/merge_liftovered_rows_with_sumstats.R"
 
@@ -157,7 +150,6 @@ rule tabulate_allele_switches_using_hg38_1kG:
     threads: 16
     resources:
         runtime = 45
-    conda: "envs/gwas_tools.yaml"
     group: "gwas_tools"
     script: "scripts/tabulate_allele_switches_using_1kG.R"
 
@@ -172,6 +164,5 @@ rule align_alleles_to_1kG:
     threads: 16
     resources:
         runtime = 20
-    conda: "envs/gwas_tools.yaml"
     group: "gwas_tools"
     script: "scripts/align_alleles_to_1kG.R"
