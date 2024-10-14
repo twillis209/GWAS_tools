@@ -1,13 +1,9 @@
 rule download_test_dataset:
     output:
-        "resources/gwas_pipeline/ra.tsv.gz"
-    run:
-        shell("wget -O {output} http://plaza.umin.ac.jp/~yokada/datasource/files/GWASMetaResults/RA_GWASmeta_European_v2.txt.gz")
-
-        md5sum_actual = shell("md5sum {output}", read = True).split(' ')[0]
-
-        if md5sum_actual != "ca5fe1dd8400a6bd620d3a76d8d9bf18":
-            raise Exception("md5sums do not match")
+        ensure("resources/gwas_pipeline/ra.tsv.gz", sha256 = "c4e32a29251af1ecd86436664ead74220516f3f6dd39d1d9ee31296eda6df7bc")
+    params:
+        url = "http://plaza.umin.ac.jp/~yokada/datasource/files/GWASMetaResults/RA_GWASmeta_European_v2.txt.gz"
+    shell: "wget -O {output} {params.url}"
 
 rule test_pipeline:
     input:
