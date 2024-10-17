@@ -3,9 +3,9 @@ cores: 16
 default-resources:
   runtime: 5
   mem_mb: threads * 3420
-software-deployment-method: apptainer
+software-deployment-method: "apptainer"
+software-deployment-method: "conda"
 conda-frontend: mamba
 scheduler: greedy
 rerun-incomplete: True
-use-singularity: True
 rerun-triggers: "mtime"
