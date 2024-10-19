@@ -9,7 +9,7 @@ include: "wildcard_constraints.smk"
 include: "rules/test_rules.smk"
 
 module kGP_pipeline:
-    snakefile: github("twillis209/1kGP_pipeline", path = "workflow/Snakefile", branch = 'master')
+    snakefile: github("twillis209/1kGP_pipeline", path = "workflow/Snakefile", commit = 'd62d3dfbc5137cb47655fc4e98fc77270957b7c3')
 
 use rule * from kGP_pipeline as kGP_*
 
