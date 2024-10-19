@@ -113,6 +113,7 @@ rule liftover:
         unlifted = temp("results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/{input_name}_unlifted.bed")
     threads: 1
     group: "gwas_tools"
+    container: None
     run:
         with open(input.build, 'r') as fh:
             assembly = fh.readline().strip()

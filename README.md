@@ -1,28 +1,19 @@
-# GWAS_tools
+# `GWAS_tools`, a pipeline for processing GWAS summary statistics into a uniform format
 
 This is a fork of [`GWAS_tools`](github.com/GRealesM/GWAS_tools), restructuring what was a `bash` program into a `snakemake` pipeline depending on a series of R scripts.
 
-## Dependencies
+All but one dependency is managed using the accompanying `docker` image. `snakemake` will pull this from Dockerhub for you, but for the sake of transparency I've also included the `Dockerfile` at `docker/Dockerfile` if you would like to examine its contents. I've not yet found a stable download URL for the `liftOver` executable and I think copying my own instance may violate some sort of copyright, so for now you'll have to put it on your own path ([download here](https://genome-store.ucsc.edu/)).
 
-The `environment.yaml` file can be used to create a `conda` environment called `gwas_tools` in which `snakemake` is available:
-
-```
-conda env create --file environment.yaml
-```
-
-This environment should also provide `R` and the following packages:
-- `data.table`
-- `stringr`
-- `magrittr`
-
-The pipeline also expects the `liftOver` executable to be on the path ([download here](https://genome-store.ucsc.edu/)).
+This pipeline also depends on the [`1kGP_pipeline` also hosted here on GitHub](github.com/twillis209/1kGP_pipeline). This workflow downloads and processes the One Thousand Genome Project Phase 3 data and its use should be entirely transparent as `snakemake` will download it and make use of it through the `module` statement.
 
 ## Testing the pipeline
 
-The `workflow/rules/test_rules.smk` file contains a target which can be used to run the pipeline on a rheumatoid arthritis data set from [Okada et al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3944098/). 
+The `workflow/rules/test_rules.smk` file contains a target which can be used to run the pipeline on a rheumatoid arthritis data set from [Okada et al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3944098/).
 
 From the root directory of the repository, run:
 
 ```
-snakemake --profile . test_pipeline
+snakemake test_pipeline
 ```
+
+You'll want to pass your own profile using the `--profile` CLI argument, too.
