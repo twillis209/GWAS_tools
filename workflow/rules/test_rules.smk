@@ -7,4 +7,4 @@ rule download_test_dataset:
 
 rule test_pipeline:
     input:
-        "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/ra-hg38.tsv.gz"
+        "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/realigned_alleles/ra.tsv.gz"
