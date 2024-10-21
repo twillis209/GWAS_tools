@@ -76,7 +76,7 @@ rule tabulate_allele_switches_using_1kG:
 
 rule detect_build:
     input:
-        manifest = "resources/gwas_pipeline/build_manifest.tsv",
+        manifest = workflow.source_path('resources/gwas_pipeline/build_manifest.tsv'),
         sumstats = "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/{input_name}.tsv.gz"
     output:
         temp("results/gwas_pipeline/build_detection/{input_name}.tsv")
@@ -108,7 +108,7 @@ rule liftover:
     input:
         build = "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/{input_name}_build.txt",
         bed_file = "results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/{input_name}.bed",
-        hg19_chainfile = "resources/gwas_pipeline/hg19ToHg38.over.chain.gz"
+        hg19_chainfile = workflow.source_path("resources/gwas_pipeline/hg19ToHg38.over.chain.gz")
     output:
         lifted = temp("results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/{input_name}_lifted.bed"),
         unlifted = temp("results/gwas_pipeline/reheaded/fixed_alleles/min_col_set/recalc_sumstats/liftover/{input_name}_unlifted.bed")
