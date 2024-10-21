@@ -3,7 +3,7 @@ min_version("8.20")
 
 configfile: "config/config.yaml"
 
-container: "docker://twillis209/gwas-tools:latest"
+conda: workflow.source_path("envs/global.yaml")
 
 include: "wildcard_constraints.smk"
 include: "rules/test_rules.smk"
